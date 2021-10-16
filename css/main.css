@@ -1,0 +1,15 @@
+.letras {
+  display: flex;
+  flex-wrap: wrap;
+}
+.letras button {
+  font-size: 24px;
+  padding: 8px;
+  background-color: cadetblue;
+  border-radius: 8px;
+  margin: 10px 10px;
+}
+
+.ocultar {
+  visibility: hidden;
+}
