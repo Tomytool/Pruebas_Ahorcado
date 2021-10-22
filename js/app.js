@@ -1,3 +1,26 @@
+let texto;
+let arrayTexto;
+
+const ingresoTexto = () => {
+  texto = prompt('Ingresa tu texto para adivinar la palabra');
+  separartexto(texto);
+};
+
+const separartexto = (cadena) => {
+  arrayTexto = cadena.split(' ');
+  console.log(arrayTexto);
+  palabraAleatoria();
+};
+
+const palabraAleatoria = () => {
+  let numeroRand = Math.floor(Math.random() * (arrayTexto.length - 0));
+  alert('palabra aleatoria es: ' + arrayTexto[numeroRand]);
+  let palabraSeparada = arrayTexto[numeroRand].split('');
+  console.log(palabraSeparada);
+};
+
+// Aqui debo hacer el codigo que pueda ingresar la opcion del usuario segun la letra que oprima en la pantalla
+
 let oportunidades = 0;
 let cuerpoQuemado;
 const borrar = () => {
