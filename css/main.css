@@ -9,7 +9,32 @@
   border-radius: 8px;
   margin: 10px 10px;
 }
-
+.frace {
+  width: 70vw;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.letraAdivinar {
+  width: 30px;
+  text-align: center;
+  font-size: 24px;
+  padding: 8px;
+  background-color: rgb(23, 221, 83);
+  margin: 10px 10px;
+  color: rgb(23, 221, 83);
+  border-bottom: 2px solid black;
+}
+.letraAcertada {
+  width: 30px;
+  text-align: center;
+  font-size: 24px;
+  padding: 8px;
+  background-color: rgb(23, 221, 83);
+  margin: 10px 10px;
+  color: black;
+  border-bottom: 2px solid black;
+}
 .ocultar {
   visibility: hidden;
 }
