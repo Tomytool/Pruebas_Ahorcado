@@ -9,16 +9,33 @@
   </head>
   <body>
     <h1>El juego del Ahorcado</h1>
-    <h2>
-      Debes ingresar una frace para poder de forma aleatoria adibinar la palabra
-    </h2>
+
     <main class="formulario">
-      <label for="ingreso">Ingrese el texto</label>
-      <input type="text" name="ingreso" id="ingreso" />
-      <button id="inicio">Jugar</button>
-      <input type="button" value="Actualizar" onclick="location.reload()"></input>
+      <h2>
+        Debes ingresar una frase de la cual se elegirá una palabra de forma
+        aleatoria y tendrá que adivinarla
+      </h2>
+      <form action="">
+        <div class="texto">
+          <textarea
+            name="textarea"
+            rows="10"
+            cols="50"
+            id="ingreso"
+            placeholder="Ingrese el Texto"
+          ></textarea>
+        </div>
+        <div class="botonesAccion">
+          <button class="btn" type="button" id="inicio">Jugar</button>
+          <button class="btn" type="button" onclick="location.reload()">
+            Actualizar
+          </button>
+        </div>
+      </form>
     </main>
+    <!-- seccion donde se inserta la palebra desde el app.js -->
     <section class="frace"></section>
+
     <section class="letras">
       <button class="letra">a</button>
       <button class="letra">b</button>
@@ -47,7 +64,7 @@
       <button class="letra">x</button>
       <button class="letra">y</button>
       <button class="letra">z</button>
-    </section
+    </section>
     <section class="contenedor">
       <svg
         width="404"
@@ -129,7 +146,7 @@
         />
       </svg>
     </section>
-    <button onclick="borrar()">verificar</button>
+
     <script src="js/app.js"></script>
   </body>
 </html>

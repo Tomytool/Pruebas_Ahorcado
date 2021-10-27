@@ -11,7 +11,6 @@ let elementoInsertar;
 const ingresoTexto = () => {
   texto = document.getElementById('ingreso').value;
   document.getElementById('ingreso').value = '';
-
   console.log(texto);
   separartexto(texto);
 };
@@ -22,9 +21,8 @@ const IniciarJuego = document
 
 // funcion que separa el texto ingresado y lo convierte en un array
 const separartexto = (cadena) => {
-  texto.innerHTML = '';
   arrayTexto = cadena.split(' ');
-  console.log(arrayTexto);
+  console.log({ arrayTexto });
   for (let i = 0; i < arrayTexto.length; i++) {
     if (arrayTexto[i].length <= 3) {
       arrayTexto.splice(i, 1);
@@ -40,6 +38,17 @@ const palabraAleatoria = () => {
   // alert('palabra aleatoria es: ' + arrayTexto[numeroRand]);
   palabraSeparada = arrayTexto[numeroRand].split('');
   console.log(palabraSeparada);
+  palabraSeparada.forEach((letra, index) => {
+    if (
+      letra === ',' ||
+      letra === '.' ||
+      letra === ';' ||
+      letra === '?' ||
+      letra === '!'
+    ) {
+      palabraSeparada.splice(index, 1);
+    }
+  });
   insertar(palabraSeparada);
 };
 
@@ -77,56 +86,46 @@ const buscarLetras = () => {
         setTimeout(() => {
           alert('ganaste');
           location.reload();
-        }, 500);
+        }, 200);
       }
     });
     if (contadorLetras === 0) {
       oportunidades += 1;
     }
-
     console.log(e.target.innerHTML);
-
     borrar(oportunidades);
   });
 };
 
 const borrar = (intentos) => {
-  switch (intentos) {
-    case 1:
-      console.log('comienza el juego');
-      break;
-    case 2:
-      cuerpoQuemado = document.querySelector('.pizq');
-      cuerpoQuemado.classList.add('ocultar');
-      console.log('te quedan 5 intentos');
-      break;
-    case 3:
-      cuerpoQuemado = document.querySelector('.pdech');
-      cuerpoQuemado.classList.add('ocultar');
-      console.log('te quedan 4 intentos');
-      break;
-    case 4:
-      cuerpoQuemado = document.querySelector('.bizq');
-      cuerpoQuemado.classList.add('ocultar');
-      console.log('te quedan 3 intentos');
-      break;
-    case 5:
-      cuerpoQuemado = document.querySelector('.bdech');
-      cuerpoQuemado.classList.add('ocultar');
-      console.log('te quedan 2 intentos');
-      break;
-    case 6:
-      cuerpoQuemado = document.querySelector('.cuerpo');
-      cuerpoQuemado.classList.add('ocultar');
-      console.log('te quedan 1 intentos');
-      break;
-    case 7:
-      cuerpoQuemado = document.querySelector('.cabeza');
-      cuerpoQuemado.classList.add('ocultar');
-      setTimeout(() => {
-        alert('Perdiste');
-        location.reload();
-      }, 200);
-      break;
+  if (intentos === 1) {
+  }
+  if (intentos === 2) {
+    cuerpoQuemado = document.querySelector('.pizq');
+    cuerpoQuemado.classList.add('ocultar');
+  }
+  if (intentos === 3) {
+    cuerpoQuemado = document.querySelector('.pdech');
+    cuerpoQuemado.classList.add('ocultar');
+  }
+  if (intentos === 4) {
+    cuerpoQuemado = document.querySelector('.bizq');
+    cuerpoQuemado.classList.add('ocultar');
+  }
+  if (intentos === 5) {
+    cuerpoQuemado = document.querySelector('.bdech');
+    cuerpoQuemado.classList.add('ocultar');
+  }
+  if (intentos === 6) {
+    cuerpoQuemado = document.querySelector('.cuerpo');
+    cuerpoQuemado.classList.add('ocultar');
+  }
+  if (intentos === 7) {
+    cuerpoQuemado = document.querySelector('.cabeza');
+    cuerpoQuemado.classList.add('ocultar');
+    setTimeout(() => {
+      alert('Perdiste');
+      location.reload();
+    }, 200);
   }
 };
