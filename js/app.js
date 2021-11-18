@@ -15,6 +15,7 @@ const ingresoTexto = () => {
   separartexto(texto);
 };
 
+// funcion que hace inicio del juego con el boton Jugar
 const IniciarJuego = document
   .getElementById('inicio')
   .addEventListener('click', ingresoTexto);

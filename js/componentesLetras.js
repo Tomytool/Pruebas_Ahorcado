@@ -1,3 +1,4 @@
+// codigo que hace la incorporacion dinamica de las letras del juego
 let abcedario = [
   'a',
   'b',

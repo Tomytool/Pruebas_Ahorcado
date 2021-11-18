@@ -1,3 +1,5 @@
+// Se realiza una función con el alert sin ocupar el nativo de javascript
+
 const mostrarAlerta = (textoMostrar, colorTexto, condicionJuego) => {
   if (condicionJuego) {
     let cuadroAlerta = document.createElement('div');
