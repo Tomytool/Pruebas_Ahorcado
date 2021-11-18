@@ -85,7 +85,7 @@ const buscarLetras = () => {
         palabraSeparada.length
       ) {
         setTimeout(() => {
-          mostrarAlerta('Has Ganado', 'blue', false);
+          mostrarAlerta('Has Ganado', 'blue');
         }, 200);
       }
     });
@@ -124,7 +124,7 @@ const borrar = (intentos) => {
     cuerpoQuemado = document.querySelector('.cabeza');
     cuerpoQuemado.classList.add('ocultar');
     setTimeout(() => {
-      mostrarAlerta('Has perdido', 'red', true);
+      mostrarAlerta('Has perdido', 'red');
     }, 200);
   }
 };
