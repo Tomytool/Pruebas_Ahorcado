@@ -16,7 +16,7 @@ const ingresoTexto = () => {
 };
 
 // funcion que hace inicio del juego con el boton Jugar
-const IniciarJuego = document
+const iniciarJuego = document
   .getElementById('inicio')
   .addEventListener('click', ingresoTexto);
 
