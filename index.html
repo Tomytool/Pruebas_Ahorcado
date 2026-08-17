@@ -1,124 +1,149 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/main.css" />
-    <title>Prueba del ahorcado</title>
-  </head>
-  <body>
-    <h1>El juego del Ahorcado</h1>
-    <main class="formulario">
-      <h2>
-        Debes ingresar una frase de la cual se elegirá una palabra de forma
-        aleatoria y tendrá que adivinarla
-      </h2>
-      <form class="formularioTexto" action="">
-        <div class="texto">
-          <textarea
-            name="textarea"
-            rows="10"
-            cols="50"
-            id="ingreso"
-            placeholder="Ingrese el Texto"
-          ></textarea>
-        </div>
-        <div class="botonesAccion">
-          <button class="btn" type="button" id="inicio">Jugar</button>
-          <button class="btn" type="button" onclick="location.reload()">
-            Cargar
-          </button>
-        </div>
-      </form>
-    </main>
-    <!-- seccion donde se inserta la palebra desde el app.js -->
-    <section class="frace"></section>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Juego del Ahorcado | Edición Moderna</title>
+  <!-- SEO & Favicon -->
+  <meta name="description" content="Juego del Ahorcado moderno, responsivo e interactivo con categorías y contador de palabras descubiertas." />
+  <!-- Estilos principales -->
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
 
-    <section id="letras"></section>
-    <section class="contenedor">
-      <svg
-        width="404"
-        height="579"
-        viewBox="0 0 404 579"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect y="456" width="143" height="123" fill="#4F704C" />
-        <line
-          x1="69"
-          y1="459"
-          x2="69"
-          y2="1.74846e-07"
-          stroke="black"
-          stroke-width="8"
-        />
-        <line
-          x1="72"
-          y1="4"
-          x2="337"
-          y2="4.00002"
-          stroke="black"
-          stroke-width="8"
-        />
-        <line
-          x1="340"
-          y1="-1.74846e-07"
-          x2="340"
-          y2="71"
-          stroke="black"
-          stroke-width="8"
-        />
-        <circle class="cabeza" cx="339.5" cy="124.5" r="53.5" fill="black" />
-        <line
-          class="cuerpo"
-          x1="340"
-          y1="178"
-          x2="340"
-          y2="340"
-          stroke="black"
-          stroke-width="8"
-        />
-        <line
-          class="pizq"
-          x1="341.486"
-          y1="335.961"
-          x2="287.486"
-          y2="431.961"
-          stroke="black"
-          stroke-width="8"
-        />
-        <line
-          class="pdech"
-          x1="393.518"
-          y1="431.959"
-          x2="339.514"
-          y2="335.961"
-          stroke="black"
-          stroke-width="8"
-        />
-        <line
-          class="bdech"
-          x1="337.632"
-          y1="240.776"
-          x2="401.632"
-          y2="193.776"
-          stroke="black"
-          stroke-width="8"
-        />
-        <line
-          class="bizq"
-          x1="274.367"
-          y1="191.776"
-          x2="338.37"
-          y2="238.773"
-          stroke="black"
-          stroke-width="8"
-        />
-      </svg>
+  <!-- NAVEGACIÓN Y HEADER CON CONTADOR -->
+  <header class="header">
+    <div class="container header-content">
+      <h1 class="app-title">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9l6 6 6-6"></path>
+          <circle cx="12" cy="12" r="10"></circle>
+        </svg>
+        El Ahorcado
+      </h1>
+
+      <!-- Badge de Palabras Descubiertas en LocalStorage -->
+      <div class="score-badge" title="Palabras adivinadas con éxito guardadas en LocalStorage">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        <span>Descubiertas: <strong id="words-guessed-count">0</strong></span>
+        <button id="reset-score-btn" class="btn-icon-reset" title="Reiniciar récord">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container main-layout">
+
+    <!-- Pestañas de Selección de Modo de Juego -->
+    <nav class="mode-tabs">
+      <button type="button" class="tab-btn active" id="tab-btn-category">Categorías Rápidas</button>
+      <button type="button" class="tab-btn" id="tab-btn-phrase">Frase Personalizada</button>
+    </nav>
+
+    <!-- Vista Modo Categorías -->
+    <section id="view-category-mode" class="mode-section">
+      <div class="category-grid">
+        <button type="button" class="btn-category selected" data-category="general">General</button>
+        <button type="button" class="btn-category" data-category="tecnologia">Tecnología</button>
+        <button type="button" class="btn-category" data-category="paises">Países</button>
+        <button type="button" class="btn-category" data-category="animales">Animales</button>
+      </div>
     </section>
-    <script src="js/componentesLetras.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/alertas.js"></script>
-  </body>
+
+    <!-- Vista Modo Frase Personalizada -->
+    <section id="view-phrase-mode" class="mode-section d-none">
+      <form id="phrase-form" class="phrase-form">
+        <textarea
+          id="phrase-input"
+          class="textarea-styled"
+          placeholder="Ingresa una frase o texto (ej: 'El conocimiento es poder'). Se elegirá una palabra al azar para adivinar."
+          rows="2"
+        ></textarea>
+        <button type="submit" class="btn btn-accent" style="align-self: flex-end;">
+          Comenzar Juego
+        </button>
+      </form>
+    </section>
+
+    <!-- TABLERO DEL JUEGO -->
+    <section class="game-card">
+
+      <!-- Columna SVG Ilustración del Ahorcado -->
+      <div class="hangman-column">
+        <div class="svg-container">
+          <svg viewBox="0 0 404 579" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Estructura Horca (Siempre Visible) -->
+            <rect y="456" width="143" height="123" fill="#185359" rx="8" />
+            <line x1="69" y1="459" x2="69" y2="4" stroke="#0d3539" stroke-width="12" stroke-linecap="round" />
+            <line x1="63" y1="6" x2="340" y2="6" stroke="#0d3539" stroke-width="12" stroke-linecap="round" />
+            <line x1="339" y1="0" x2="339" y2="71" stroke="#d97736" stroke-width="8" />
+
+            <!-- Partes del Cuerpo del Ahorcado (Animadas/Reveladas dinámicamente) -->
+            <!-- 1. Cabeza -->
+            <circle class="hangman-part svg-head" cx="339" cy="125" r="50" fill="#185359" stroke="#0d3539" stroke-width="6" />
+            <!-- 2. Cuerpo -->
+            <line class="hangman-part svg-body" x1="339" y1="175" x2="339" y2="340" stroke="#185359" stroke-width="10" stroke-linecap="round" />
+            <!-- 3. Brazo Izquierdo -->
+            <line class="hangman-part svg-arm-left" x1="339" y1="220" x2="275" y2="175" stroke="#185359" stroke-width="8" stroke-linecap="round" />
+            <!-- 4. Brazo Derecho -->
+            <line class="hangman-part svg-arm-right" x1="339" y1="220" x2="403" y2="175" stroke="#185359" stroke-width="8" stroke-linecap="round" />
+            <!-- 5. Pierna Izquierda -->
+            <line class="hangman-part svg-leg-left" x1="339" y1="335" x2="285" y2="430" stroke="#185359" stroke-width="8" stroke-linecap="round" />
+            <!-- 6. Pierna Derecha -->
+            <line class="hangman-part svg-leg-right" x1="339" y1="335" x2="393" y2="430" stroke="#185359" stroke-width="8" stroke-linecap="round" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Columna Principal de Juego -->
+      <div class="play-column">
+
+        <!-- Barra de Información de Intentos -->
+        <div class="game-info-bar">
+          <span class="badge-category" id="category-badge">General</span>
+          
+          <div class="attempts-container">
+            <span>Intentos: <strong id="attempts-count">6</strong>/6</span>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="attempts-progress-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Espacio para la Palabra a Adivinar -->
+        <div class="word-display" id="word-display">
+          <!-- Generado dinámicamente desde app.js -->
+        </div>
+
+        <!-- Teclado Virtual Interactivo -->
+        <div class="keyboard-display" id="keyboard-display">
+          <!-- Generado dinámicamente desde app.js -->
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL DE RESULTADOS (Ganado / Perdido) -->
+  <div class="modal-overlay" id="result-modal">
+    <div class="modal-card">
+      <h2 class="modal-title" id="modal-title">¡Resultado!</h2>
+      <p class="modal-word" id="modal-word">La palabra era: <span>---</span></p>
+      <p id="modal-message">Detalles del resultado...</p>
+      <button type="button" class="btn btn-primary" id="modal-action-btn">Continuar</button>
+    </div>
+  </div>
+
+  <!-- Carga del Controlador Principal ES6 -->
+  <script type="module" src="js/app.js"></script>
+</body>
 </html>

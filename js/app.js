@@ -1,130 +1,178 @@
-let texto;
-let arrayTexto;
-let palabraSeparada;
-let oportunidades = 0;
-let cuerpoQuemado;
-let intentosAcertados = 0;
-let contadorLetras;
-let elementoInsertar;
+/**
+ * Aplicación Principal del Ahorcado (App Controller)
+ * Integra el juego (game.js), la UI (ui.js) y la memoria local (storage.js).
+ */
 
-// aqui se da inicio  a la función de ingreso de fraces
-const ingresoTexto = () => {
-  texto = document.getElementById('ingreso').value;
-  document.getElementById('ingreso').value = '';
-  console.log(texto);
-  separartexto(texto);
-};
+import { HangmanGame } from './game.js';
+import { UIManager } from './ui.js';
+import { incrementWordsGuessed, resetWordsGuessed } from './storage.js';
 
-// funcion que hace inicio del juego con el boton Jugar
-const iniciarJuego = document
-  .getElementById('inicio')
-  .addEventListener('click', ingresoTexto);
-
-// funcion que separa el texto ingresado y lo convierte en un array
-const separartexto = (cadena) => {
-  arrayTexto = cadena.split(' ');
-  console.log({ arrayTexto });
-  for (let i = 0; i < arrayTexto.length; i++) {
-    if (arrayTexto[i].length <= 3) {
-      arrayTexto.splice(i, 1);
-    }
+class AppController {
+  constructor() {
+    this.game = new HangmanGame();
+    this.ui = new UIManager();
+    this.currentMode = 'category'; // 'category' | 'phrase'
+    this.currentCategory = 'general';
   }
-  console.log(arrayTexto);
-  palabraAleatoria();
-};
 
-// funcion que elige una palabra aleatoria dentro del array y la separa por letras
-const palabraAleatoria = () => {
-  let numeroRand = Math.floor(Math.random() * (arrayTexto.length - 0));
-  // alert('palabra aleatoria es: ' + arrayTexto[numeroRand]);
-  palabraSeparada = arrayTexto[numeroRand].split('');
-  console.log(palabraSeparada);
-  palabraSeparada.forEach((letra, index) => {
-    if (
-      letra === ',' ||
-      letra === '.' ||
-      letra === ';' ||
-      letra === '?' ||
-      letra === '!'
-    ) {
-      palabraSeparada.splice(index, 1);
+  init() {
+    this.bindEvents();
+    this.ui.updateScoreBadge();
+    
+    // Iniciar con categoría general por defecto
+    this.startNewCategoryGame(this.currentCategory);
+  }
+
+  bindEvents() {
+    // Pestañas / Toggles de Modo de Juego
+    const tabBtnCategory = document.getElementById('tab-btn-category');
+    const tabBtnPhrase = document.getElementById('tab-btn-phrase');
+    const viewCategory = document.getElementById('view-category-mode');
+    const viewPhrase = document.getElementById('view-phrase-mode');
+
+    if (tabBtnCategory && tabBtnPhrase) {
+      tabBtnCategory.addEventListener('click', () => {
+        this.currentMode = 'category';
+        tabBtnCategory.classList.add('active');
+        tabBtnPhrase.classList.remove('active');
+        viewCategory.classList.remove('d-none');
+        viewPhrase.classList.add('d-none');
+      });
+
+      tabBtnPhrase.addEventListener('click', () => {
+        this.currentMode = 'phrase';
+        tabBtnPhrase.classList.add('active');
+        tabBtnCategory.classList.remove('active');
+        viewPhrase.classList.remove('d-none');
+        viewCategory.classList.add('d-none');
+      });
     }
-  });
-  insertar(palabraSeparada);
-};
 
-// insertar en pantalla
-const insertar = (arrayMostrada) => {
-  insertarLetra = document.getElementsByClassName('frace');
-  arrayMostrada.forEach((letra) => {
-    const elementoInsertar = document.createElement('div');
-    elementoInsertar.classList.add('letraAdivinar');
-    elementoInsertar.innerHTML = letra;
-    console.log(letra);
-    insertarLetra[0].appendChild(elementoInsertar);
-  });
-  buscarLetras();
-};
+    // Botones de selección de categoría
+    const categoryButtons = document.querySelectorAll('[data-category]');
+    categoryButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const cat = e.currentTarget.getAttribute('data-category');
+        categoryButtons.forEach(b => b.classList.remove('selected'));
+        e.currentTarget.classList.add('selected');
+        this.currentCategory = cat;
+        this.startNewCategoryGame(cat);
+      });
+    });
 
-// Aqui debo hacer el codigo que pueda ingresar la opcion del usuario segun la letra que oprima en la pantalla
-const buscarLetras = () => {
-  const div = document.querySelectorAll('.letraAdivinar');
-  this.addEventListener('click', (e) => {
-    let comparacion = e.target.innerHTML;
-    contadorLetras = 0;
-    palabraSeparada.forEach((letra, index) => {
-      console.log(index);
-      console.log(letra);
-      if (letra === comparacion) {
-        div[index].classList.remove('letraAdivinar');
-        div[index].classList.add('letraAcertada');
-        contadorLetras += 1;
+    // Formulario de frase personalizada
+    const phraseForm = document.getElementById('phrase-form');
+    const phraseInput = document.getElementById('phrase-input');
+
+    if (phraseForm) {
+      phraseForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const phrase = phraseInput ? phraseInput.value : '';
+        try {
+          this.game.startWithPhrase(phrase);
+          this.updateUI();
+          if (phraseInput) phraseInput.value = '';
+          this.ui.showToast('¡Partida iniciada con tu frase!', 'info');
+        } catch (error) {
+          this.ui.showToast(error.message, 'warning');
+        }
+      });
+    }
+
+    // Evento de Teclado Físico (keydown)
+    window.addEventListener('keydown', (e) => {
+      // Ignorar si se está escribiendo en el textarea
+      if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') {
+        return;
       }
-      if (
-        document.querySelectorAll('.letraAcertada').length ===
-        palabraSeparada.length
-      ) {
-        setTimeout(() => {
-          mostrarAlerta('Has Ganado', 'blue');
-        }, 200);
+
+      const key = e.key.toUpperCase();
+      if (key === 'Ñ' || (key.length === 1 && key >= 'A' && key <= 'Z')) {
+        this.handleKeyPress(key);
       }
     });
-    if (contadorLetras === 0) {
-      oportunidades += 1;
-    }
-    console.log(e.target.innerHTML);
-    borrar(oportunidades);
-  });
-};
 
-const borrar = (intentos) => {
-  if (intentos === 1) {
+    // Botón de Reiniciar Marcador de LocalStorage
+    const resetScoreBtn = document.getElementById('reset-score-btn');
+    if (resetScoreBtn) {
+      resetScoreBtn.addEventListener('click', () => {
+        if (confirm('¿Estás seguro de que deseas reiniciar tu contador de palabras descubiertas?')) {
+          resetWordsGuessed();
+          this.ui.updateScoreBadge();
+          this.ui.showToast('Contador reiniciado a 0.', 'info');
+        }
+      });
+    }
   }
-  if (intentos === 2) {
-    cuerpoQuemado = document.querySelector('.pizq');
-    cuerpoQuemado.classList.add('ocultar');
+
+  /**
+   * Inicia una partida con la categoría indicada.
+   * @param {string} categoryKey 
+   */
+  startNewCategoryGame(categoryKey) {
+    this.game.startWithCategory(categoryKey);
+    this.updateUI();
   }
-  if (intentos === 3) {
-    cuerpoQuemado = document.querySelector('.pdech');
-    cuerpoQuemado.classList.add('ocultar');
+
+  /**
+   * Maneja la pulsación de una letra (virtual o física).
+   * @param {string} letter 
+   */
+  handleKeyPress(letter) {
+    if (this.game.status !== 'PLAYING') return;
+
+    const result = this.game.guessLetter(letter);
+
+    if (result.isRepeated) {
+      this.ui.showToast(`Ya intentaste la letra '${letter}'.`, 'warning');
+      return;
+    }
+
+    this.updateUI();
+
+    // Comprobar estado final del juego
+    if (result.status === 'WON') {
+      const newTotal = incrementWordsGuessed();
+      this.ui.updateScoreBadge();
+      this.ui.showResultModal('WON', this.game.secretWord, newTotal, () => {
+        this.restartGame();
+      });
+    } else if (result.status === 'LOST') {
+      this.ui.showResultModal('LOST', this.game.secretWord, 0, () => {
+        this.restartGame();
+      });
+    }
   }
-  if (intentos === 4) {
-    cuerpoQuemado = document.querySelector('.bizq');
-    cuerpoQuemado.classList.add('ocultar');
+
+  /**
+   * Actualiza todos los elementos de la interfaz.
+   */
+  updateUI() {
+    this.ui.renderCategory(this.game.categoryName);
+    this.ui.renderWord(this.game.getWordDisplayState());
+    this.ui.renderKeyboard(
+      this.game.guessedLetters,
+      this.game.wrongLetters,
+      (letter) => this.handleKeyPress(letter)
+    );
+    this.ui.renderHangman(this.game.attemptsLeft);
   }
-  if (intentos === 5) {
-    cuerpoQuemado = document.querySelector('.bdech');
-    cuerpoQuemado.classList.add('ocultar');
+
+  /**
+   * Reinicia la partida según el modo de juego actual.
+   */
+  restartGame() {
+    if (this.currentMode === 'phrase') {
+      // Si estaba en modo frase, pedirle ingresar otra o volver a categoría
+      this.startNewCategoryGame(this.currentCategory);
+    } else {
+      this.startNewCategoryGame(this.currentCategory);
+    }
   }
-  if (intentos === 6) {
-    cuerpoQuemado = document.querySelector('.cuerpo');
-    cuerpoQuemado.classList.add('ocultar');
-  }
-  if (intentos === 7) {
-    cuerpoQuemado = document.querySelector('.cabeza');
-    cuerpoQuemado.classList.add('ocultar');
-    setTimeout(() => {
-      mostrarAlerta('Has perdido', 'red');
-    }, 200);
-  }
-};
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+  const app = new AppController();
+  app.init();
+});
