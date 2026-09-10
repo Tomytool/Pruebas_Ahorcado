@@ -61,7 +61,7 @@ Para ejecutar la aplicación localmente:
 
 1. **Clonar o descargar el repositorio**:
    ```bash
-   git clone <url-del-repositorio>
+   git clone https://github.com/Tomytool/Pruebas_Ahorcado.git
    ```
 
 2. **Abrir en el navegador**:
