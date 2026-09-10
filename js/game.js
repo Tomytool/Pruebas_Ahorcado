@@ -1,6 +1,6 @@
 /**
- * Módulo de Lógica de Juego del Ahorcado
- * Maneja el estado, selección de palabras, verificación de letras e intentos.
+ * Módulo de Lógica de Juego del Ahorcado (ES6+)
+ * Maneja el estado del juego, selección de palabras, parsing de párrafos y puntuación.
  */
 
 export const MAX_ATTEMPTS = 6;
@@ -9,28 +9,32 @@ export const CATEGORIES = {
   tecnologia: [
     'JAVASCRIPT', 'DESARROLLADOR', 'PROGRAMACION', 'COMPUTADORA',
     'ALGORITMO', 'INTELIGENCIA', 'INTERNET', 'VARIABLES', 'FUNCIONES',
-    'BASE DE DATOS', 'SERVIDOR', 'FRONTEND', 'BACKEND', 'NAVEGADOR'
+    'BASE DE DATOS', 'SERVIDOR', 'FRONTEND', 'BACKEND', 'NAVEGADOR',
+    'CIENCIA DE DATOS', 'CIBERSEGURIDAD', 'ARQUITECTURA'
   ],
   paises: [
     'COLOMBIA', 'ARGENTINA', 'ESPAÑA', 'MEXICO', 'PERU', 'CHILE',
-    'FRANCIA', 'ALEMANIA', 'JAPON', 'CANADA', 'BRASIL', 'ITALIA'
+    'FRANCIA', 'ALEMANIA', 'JAPON', 'CANADA', 'BRASIL', 'ITALIA',
+    'AUSTRALIA', 'PORTUGAL', 'SUIZA', 'URUGUAY', 'COSTA RICA'
   ],
   animales: [
     'LEOPARDO', 'ELEFANTE', 'DELFIN', 'JIRAFA', 'CANGURO', 'PINGÜINO',
-    'TIBURON', 'AGUILA', 'CAMALEON', 'HIPOPOTAMO', 'COCODRILO'
+    'TIBURON', 'AGUILA', 'CAMALEON', 'HIPOPOTAMO', 'COCODRILO',
+    'PANTERA', 'GUACAMAYO', 'COLIBRI', 'ORCA'
   ],
   general: [
     'AVENTURA', 'DESAFIO', 'HORIZONTE', 'UNIVERSO', 'CREATIVIDAD',
-    'INSPIRACION', 'NATURALEZA', 'IMAGINACION', 'CONOCIMIENTO', 'ESTRATEGIA'
+    'INSPIRACION', 'NATURALEZA', 'IMAGINACION', 'CONOCIMIENTO', 'ESTRATEGIA',
+    'CULTURA', 'LIDERAZGO', 'INNOVACION', 'MARAVILLA'
   ]
 };
 
 /**
- * Elimina acentos/diacríticos de una cadena de texto para facilitar la comparación de letras.
+ * Normaliza cadenas removiendo acentos y convirtiendo a mayúsculas.
  * @param {string} str 
  * @returns {string}
  */
-export const normalizeText = (str) => {
+export const normalizeText = (str = '') => {
   return str
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -46,55 +50,66 @@ export class HangmanGame {
     this.attemptsLeft = MAX_ATTEMPTS;
     this.status = 'IDLE'; // 'IDLE' | 'PLAYING' | 'WON' | 'LOST'
     this.categoryName = '';
+    this.candidateWords = []; // Lista de palabras elegibles (especialmente en Modo Párrafo)
+    this.originalParagraph = '';
+    this.score = 0;
   }
 
   /**
-   * Inicia una nueva partida eligiendo una palabra aleatoria de una categoría predefinida.
+   * Inicia una partida basada en una categoría predefinida.
    * @param {string} categoryKey 
    */
   startWithCategory(categoryKey = 'general') {
-    const list = CATEGORIES[categoryKey] || CATEGORIES.general;
+    const list = CATEGORIES[categoryKey] ?? CATEGORIES.general;
     const randomIndex = Math.floor(Math.random() * list.length);
     const word = list[randomIndex];
+
     const categoryLabels = {
       tecnologia: 'Tecnología',
-      paises: 'Países',
+      paises: 'Países y Ciudades',
       animales: 'Animales',
       general: 'Cultura General'
     };
-    
-    this.initGame(word, categoryLabels[categoryKey] || 'Categoría Rápida');
+
+    this.candidateWords = [...list];
+    this.originalParagraph = '';
+    this.initGame(word, categoryLabels[categoryKey] ?? 'Categoría Rápida');
   }
 
   /**
-   * Inicia una partida basada en una frase ingresada por el usuario.
-   * Filtra palabras cortas (menores a 3 letras) y selecciona una aleatoria.
-   * @param {string} phrase 
+   * Inicia una partida procesando un párrafo completo ingresado por el usuario.
+   * Extrae todas las palabras de 3 o más letras, muestra el banco de palabras y elige una al azar.
+   * @param {string} paragraph 
    */
-  startWithPhrase(phrase) {
-    if (!phrase || typeof phrase !== 'string') {
-      throw new Error('Debes ingresar una frase válida.');
+  startWithPhrase(paragraph) {
+    if (!paragraph || typeof paragraph !== 'string' || paragraph.trim().length === 0) {
+      throw new Error('Debes ingresar un párrafo o texto válido.');
     }
 
-    // Dividir por espacios y limpiar palabras
-    const words = phrase
-      .trim()
+    this.originalParagraph = paragraph.trim();
+
+    // Extraer palabras usando expresiones regulares (mínimo 3 caracteres alfabéticos)
+    const rawWords = this.originalParagraph
       .split(/\s+/)
-      .map(w => w.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, ''))
-      .filter(w => w.length >= 3);
+      .map(word => word.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, ''))
+      .filter(word => word.length >= 3);
 
-    if (words.length === 0) {
-      throw new Error('La frase debe contener al menos una palabra de 3 o más letras.');
+    if (rawWords.length === 0) {
+      throw new Error('El párrafo debe contener al menos una palabra válida de 3 o más letras.');
     }
 
-    const randomIndex = Math.floor(Math.random() * words.length);
-    const selectedWord = words[randomIndex].toUpperCase();
-    
-    this.initGame(selectedWord, 'Frase Personalizada');
+    // Guardar palabras únicas en mayúsculas para la vista previa
+    this.candidateWords = [...new Set(rawWords.map(w => w.toUpperCase()))];
+
+    // Elegir una palabra aleatoria del párrafo
+    const randomIndex = Math.floor(Math.random() * rawWords.length);
+    const selectedWord = rawWords[randomIndex].toUpperCase();
+
+    this.initGame(selectedWord, 'Párrafo Personalizado');
   }
 
   /**
-   * Inicializa las variables de estado del juego.
+   * Inicializa el estado para una palabra concreta.
    * @param {string} word 
    * @param {string} categoryName 
    */
@@ -107,7 +122,7 @@ export class HangmanGame {
     this.status = 'PLAYING';
     this.categoryName = categoryName;
 
-    // Agregar automáticamente espacios si la palabra contiene espacios
+    // Aceptar automáticamente espacios si los hubiere
     for (let i = 0; i < this.secretWord.length; i++) {
       if (this.secretWord[i] === ' ') {
         this.guessedLetters.add(' ');
@@ -116,9 +131,9 @@ export class HangmanGame {
   }
 
   /**
-   * Procesa la suposición de una letra por parte del usuario.
+   * Intenta adivinar una letra.
    * @param {string} rawLetter 
-   * @returns {Object} { isCorrect, isRepeated, status }
+   * @returns {{ isCorrect: boolean, isRepeated: boolean, status: string }}
    */
   guessLetter(rawLetter) {
     if (this.status !== 'PLAYING') {
@@ -137,13 +152,14 @@ export class HangmanGame {
     if (this.normalizedSecretWord.includes(letter)) {
       this.guessedLetters.add(letter);
 
-      // Verificar si ya se adivinaron todas las letras
+      // Comprobar si todas las letras fueron adivinadas
       const isWon = [...this.normalizedSecretWord].every(char => 
         char === ' ' || this.guessedLetters.has(char)
       );
 
       if (isWon) {
         this.status = 'WON';
+        this.score = this.attemptsLeft * 100 + this.secretWord.length * 20;
       }
 
       return { isCorrect: true, isRepeated: false, status: this.status };
@@ -160,8 +176,8 @@ export class HangmanGame {
   }
 
   /**
-   * Obtiene la estructura visual de la palabra con espacios y letras descubiertas o guiones.
-   * @returns {Array<{char: string, revealed: boolean}>}
+   * Devuelve el estado de cada carácter de la palabra para su renderizado en la interfaz.
+   * @returns {Array<{char: string, revealed: boolean, isSpace: boolean}>}
    */
   getWordDisplayState() {
     return [...this.secretWord].map((originalChar, index) => {

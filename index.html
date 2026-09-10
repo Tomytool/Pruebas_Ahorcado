@@ -1,149 +1,583 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>El Juego del Ahorcado | Edición Moderna</title>
-  <!-- SEO & Favicon -->
-  <meta name="description" content="Juego del Ahorcado moderno, responsivo e interactivo con categorías y contador de palabras descubiertas." />
-  <!-- Estilos principales -->
-  <link rel="stylesheet" href="css/main.css" />
-</head>
-<body>
-
-  <!-- NAVEGACIÓN Y HEADER CON CONTADOR -->
-  <header class="header">
-    <div class="container header-content">
-      <h1 class="app-title">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 9l6 6 6-6"></path>
-          <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-        El Ahorcado
-      </h1>
-
-      <!-- Badge de Palabras Descubiertas en LocalStorage -->
-      <div class="score-badge" title="Palabras adivinadas con éxito guardadas en LocalStorage">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-        <span>Descubiertas: <strong id="words-guessed-count">0</strong></span>
-        <button id="reset-score-btn" class="btn-icon-reset" title="Reiniciar récord">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-            <path d="M3 3v5h5"></path>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>El Juego del Ahorcado 3D | Edición Competidor & Temporizador</title>
+    <!-- SEO & Meta -->
+    <meta
+      name="description"
+      content="Juego del Ahorcado 3D interactivo con Three.js, temporizador de cuenta regresiva configurable, perfil de competidor y cuadros de avance."
+    />
+    <!-- Estilos principales -->
+    <link rel="stylesheet" href="css/main.css" />
+    <!-- Carga de la Librería Three.js (r128) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  </head>
+  <body>
+    <!-- NAVEGACIÓN Y HEADER CON PERFIL DE COMPETIDOR Y ESTADÍSTICAS -->
+    <header class="header">
+      <div class="container header-content">
+        <h1 class="app-title">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+            ></path>
           </svg>
-        </button>
+          Ahorcado 3D
+        </h1>
+
+        <!-- Marcadores y Perfil del Competidor -->
+        <div class="header-stats">
+          <div
+            class="player-badge"
+            title="Haz clic para cambiar perfil o partida"
+          >
+            <span>👤 <strong id="player-name-display">Competidor</strong></span>
+            <button
+              id="edit-player-btn"
+              class="btn-icon-reset"
+              title="Nueva Partida / Configuración"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                ></path>
+                <path
+                  d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                ></path>
+              </svg>
+            </button>
+          </div>
+
+          <div
+            class="score-badge streak-badge"
+            title="Racha de victorias consecutivas"
+          >
+            🔥 Racha: <strong id="streak-count">0</strong>
+          </div>
+
+          <div class="score-badge" title="Palabras adivinadas acumuladas">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+              />
+            </svg>
+            <span>Adivinadas: <strong id="words-guessed-count">0</strong></span>
+          </div>
+
+          <button
+            id="reset-all-btn"
+            class="btn-reset-global"
+            title="Reiniciar absolutamente todo el juego"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            Reiniciar Todo
+          </button>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <main class="container main-layout">
-
-    <!-- Pestañas de Selección de Modo de Juego -->
-    <nav class="mode-tabs">
-      <button type="button" class="tab-btn active" id="tab-btn-category">Categorías Rápidas</button>
-      <button type="button" class="tab-btn" id="tab-btn-phrase">Frase Personalizada</button>
-    </nav>
-
-    <!-- Vista Modo Categorías -->
-    <section id="view-category-mode" class="mode-section">
-      <div class="category-grid">
-        <button type="button" class="btn-category selected" data-category="general">General</button>
-        <button type="button" class="btn-category" data-category="tecnologia">Tecnología</button>
-        <button type="button" class="btn-category" data-category="paises">Países</button>
-        <button type="button" class="btn-category" data-category="animales">Animales</button>
-      </div>
-    </section>
-
-    <!-- Vista Modo Frase Personalizada -->
-    <section id="view-phrase-mode" class="mode-section d-none">
-      <form id="phrase-form" class="phrase-form">
-        <textarea
-          id="phrase-input"
-          class="textarea-styled"
-          placeholder="Ingresa una frase o texto (ej: 'El conocimiento es poder'). Se elegirá una palabra al azar para adivinar."
-          rows="2"
-        ></textarea>
-        <button type="submit" class="btn btn-accent" style="align-self: flex-end;">
-          Comenzar Juego
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="container main-layout">
+      <!-- Pestañas de Selección de Modo de Juego en Tablero -->
+      <nav class="mode-tabs">
+        <button type="button" class="tab-btn active" id="tab-btn-category">
+          Categorías Rápidas
         </button>
-      </form>
-    </section>
+        <button type="button" class="tab-btn" id="tab-btn-phrase">
+          Párrafo Personalizado
+        </button>
+      </nav>
 
-    <!-- TABLERO DEL JUEGO -->
-    <section class="game-card">
+      <!-- Panel de Configuración Rápida del Temporizador -->
+      <div class="timer-config-panel">
+        <span class="timer-config-title">
+          ⏱️ Configuración del Temporizador:
+        </span>
 
-      <!-- Columna SVG Ilustración del Ahorcado -->
-      <div class="hangman-column">
-        <div class="svg-container">
-          <svg viewBox="0 0 404 579" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Estructura Horca (Siempre Visible) -->
-            <rect y="456" width="143" height="123" fill="#185359" rx="8" />
-            <line x1="69" y1="459" x2="69" y2="4" stroke="#0d3539" stroke-width="12" stroke-linecap="round" />
-            <line x1="63" y1="6" x2="340" y2="6" stroke="#0d3539" stroke-width="12" stroke-linecap="round" />
-            <line x1="339" y1="0" x2="339" y2="71" stroke="#d97736" stroke-width="8" />
+        <div class="timer-inputs-group">
+          <label
+            for="timer-input-min"
+            style="font-size: 0.85rem; font-weight: 600"
+            >Min:</label
+          >
+          <input
+            type="number"
+            id="timer-input-min"
+            class="input-timer-num"
+            value="2"
+            min="0"
+            max="59"
+          />
+          <label
+            for="timer-input-sec"
+            style="font-size: 0.85rem; font-weight: 600"
+            >Seg:</label
+          >
+          <input
+            type="number"
+            id="timer-input-sec"
+            class="input-timer-num"
+            value="00"
+            min="0"
+            max="59"
+            step="5"
+          />
+        </div>
 
-            <!-- Partes del Cuerpo del Ahorcado (Animadas/Reveladas dinámicamente) -->
-            <!-- 1. Cabeza -->
-            <circle class="hangman-part svg-head" cx="339" cy="125" r="50" fill="#185359" stroke="#0d3539" stroke-width="6" />
-            <!-- 2. Cuerpo -->
-            <line class="hangman-part svg-body" x1="339" y1="175" x2="339" y2="340" stroke="#185359" stroke-width="10" stroke-linecap="round" />
-            <!-- 3. Brazo Izquierdo -->
-            <line class="hangman-part svg-arm-left" x1="339" y1="220" x2="275" y2="175" stroke="#185359" stroke-width="8" stroke-linecap="round" />
-            <!-- 4. Brazo Derecho -->
-            <line class="hangman-part svg-arm-right" x1="339" y1="220" x2="403" y2="175" stroke="#185359" stroke-width="8" stroke-linecap="round" />
-            <!-- 5. Pierna Izquierda -->
-            <line class="hangman-part svg-leg-left" x1="339" y1="335" x2="285" y2="430" stroke="#185359" stroke-width="8" stroke-linecap="round" />
-            <!-- 6. Pierna Derecha -->
-            <line class="hangman-part svg-leg-right" x1="339" y1="335" x2="393" y2="430" stroke="#185359" stroke-width="8" stroke-linecap="round" />
-          </svg>
+        <div class="timer-presets">
+          <button type="button" class="timer-preset-btn" data-timer-preset="60">
+            1 Min
+          </button>
+          <button
+            type="button"
+            class="timer-preset-btn active"
+            data-timer-preset="120"
+          >
+            2 Min
+          </button>
+          <button
+            type="button"
+            class="timer-preset-btn"
+            data-timer-preset="180"
+          >
+            3 Min
+          </button>
+          <button
+            type="button"
+            class="timer-preset-btn"
+            data-timer-preset="300"
+          >
+            5 Min
+          </button>
         </div>
       </div>
 
-      <!-- Columna Principal de Juego -->
-      <div class="play-column">
+      <!-- Vista Modo Párrafo Personalizado -->
+      <section id="view-phrase-mode" class="mode-section d-none">
+        <form id="phrase-form" class="phrase-form">
+          <textarea
+            id="phrase-input"
+            class="textarea-styled"
+            placeholder="Ingresa un párrafo completo o texto (ej: 'El desarrollo de software con JavaScript permite crear aplicaciones interactivas e innovadoras'). Se extraerán las palabras candidatas y se elegirá una al azar para descubrir."
+            rows="3"
+          ></textarea>
+          <button
+            type="submit"
+            class="btn btn-accent"
+            style="align-self: flex-end"
+          >
+            Procesar Párrafo y Jugar
+          </button>
+        </form>
+      </section>
+      <!-- TABLERO PRINCIPAL DEL JUEGO -->
+      <section class="game-card" id="game-card">
+        <!-- Columna Escenario 3D Three.js -->
+        <div class="hangman-column">
+          <div
+            id="three-canvas-container"
+            class="three-canvas-container"
+            title="Usa el ratón para mover la cámara 3D"
+          ></div>
+        </div>
 
-        <!-- Barra de Información de Intentos -->
-        <div class="game-info-bar">
-          <span class="badge-category" id="category-badge">General</span>
-          
-          <div class="attempts-container">
-            <span>Intentos: <strong id="attempts-count">6</strong>/6</span>
-            <div class="progress-bar-bg">
-              <div class="progress-bar-fill" id="attempts-progress-bar"></div>
+        <!-- Columna Principal de Juego -->
+        <div class="play-column">
+          <!-- Barra de Información, Intentos y Temporizador Neón -->
+          <div class="game-info-bar">
+            <span class="badge-category" id="category-badge">General</span>
+
+            <!-- Widget del Reloj Neón de Cuenta Regresiva -->
+            <div
+              id="timer-widget"
+              class="timer-widget"
+              title="Tiempo restante para descubrir la palabra"
+            >
+              <div class="timer-ring-container">
+                <svg class="timer-svg" viewBox="0 0 50 50">
+                  <circle class="timer-bg-circle" cx="25" cy="25" r="22" />
+                  <circle
+                    id="timer-ring-circle"
+                    class="timer-ring-circle"
+                    cx="25"
+                    cy="25"
+                    r="22"
+                  />
+                </svg>
+              </div>
+              <span id="timer-display-text" class="timer-display-text"
+                >02:00</span
+              >
             </div>
+
+            <div class="attempts-container">
+              <span>Intentos: <strong id="attempts-count">6</strong>/6</span>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="attempts-progress-bar"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Espacio para la Palabra a Adivinar (Tiles 3D) -->
+          <div class="word-display" id="word-display">
+            <!-- Generado dinámicamente -->
+          </div>
+
+          <!-- Teclado Virtual Interactivo -->
+          <div class="keyboard-display" id="keyboard-display">
+            <!-- Generado dinámicamente -->
           </div>
         </div>
 
-        <!-- Espacio para la Palabra a Adivinar -->
-        <div class="word-display" id="word-display">
-          <!-- Generado dinámicamente desde app.js -->
+        <!-- Columna Lateral para Palabras Descubribles -->
+        <aside id="paragraph-words-preview" class="words-sidebar-column d-none">
+          <div class="words-sidebar-header">
+            <span class="words-preview-title">📖 Palabras Descubribles</span>
+            <span id="words-count-badge" class="words-count-badge">0</span>
+          </div>
+          <div id="paragraph-words-list" class="paragraph-words-list"></div>
+        </aside>
+      </section>
+      <!-- Vista Modo Categorías -->
+      <section id="view-category-mode" class="mode-section">
+        <div class="category-grid">
+          <button
+            type="button"
+            class="btn-category selected"
+            data-category="general"
+          >
+            General
+          </button>
+          <button type="button" class="btn-category" data-category="tecnologia">
+            Tecnología
+          </button>
+          <button type="button" class="btn-category" data-category="paises">
+            Países / Ciudades
+          </button>
+          <button type="button" class="btn-category" data-category="animales">
+            Animales
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER PRINCIPAL (UI/UX PRO MAX) -->
+    <footer class="footer">
+      <div class="container footer-content">
+        <!-- Marca y Descripción -->
+        <div class="footer-brand">
+          <h2 class="footer-title">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+              ></path>
+            </svg>
+            Ahorcado 3D
+          </h2>
+          <p class="footer-desc">
+            Plataforma pedagógica e interactiva de adivinanza de palabras basada
+            en gráficos 3D Three.js, temporizador de cuenta regresiva, cuadros
+            de avance y experiencia de competencia personalizada.
+          </p>
         </div>
 
-        <!-- Teclado Virtual Interactivo -->
-        <div class="keyboard-display" id="keyboard-display">
-          <!-- Generado dinámicamente desde app.js -->
+        <!-- Insignias de Características -->
+        <div class="footer-features">
+          <span class="footer-chip">🎮 Three.js 3D Engine</span>
+          <span class="footer-chip">⏱️ Temporizador de Precisión</span>
+          <span class="footer-chip">🟩 Cuadros de Avance</span>
+          <span class="footer-chip">🔊 Web Audio Sintetizado</span>
+          <span class="footer-chip">⌨️ Teclado Físico & Touch</span>
         </div>
 
+        <!-- Pie de página y Copyright -->
+        <div class="footer-bottom">
+          <p>© 2026 Ahorcado 3D — Diseñado por Tomytool.</p>
+          <p class="footer-hint">
+            💡 Sugerencia: Puedes presionar las teclas de tu teclado (A-Z, Ñ)
+            para jugar directamente.
+          </p>
+        </div>
       </div>
+    </footer>
 
-    </section>
+    <!-- MODAL DE INSCRIPCIÓN UNIFICADO DEL COMPETIDOR (NOMBRE + TIEMPO + MODO/CATEGORÍA O PÁRRAFO) -->
+    <div class="modal-overlay" id="player-modal">
+      <div class="modal-card modal-card-large">
+        <h2 class="modal-title text-success">🏆 Configuración de Partida</h2>
+        <p class="modal-word">
+          Ingresa tus datos y elige el modo de juego antes de comenzar la
+          prueba:
+        </p>
 
-  </main>
+        <form id="player-form" class="player-form">
+          <!-- 1. Nombre del Competidor -->
+          <div>
+            <label
+              style="
+                display: block;
+                font-size: 0.85rem;
+                font-weight: 700;
+                margin-bottom: 0.3rem;
+                text-align: left;
+              "
+              >1. Nombre o Nickname:</label
+            >
+            <input
+              type="text"
+              id="player-name-input"
+              class="input-styled"
+              placeholder="Tu Nombre..."
+              maxlength="20"
+              required
+            />
+          </div>
 
-  <!-- MODAL DE RESULTADOS (Ganado / Perdido) -->
-  <div class="modal-overlay" id="result-modal">
-    <div class="modal-card">
-      <h2 class="modal-title" id="modal-title">¡Resultado!</h2>
-      <p class="modal-word" id="modal-word">La palabra era: <span>---</span></p>
-      <p id="modal-message">Detalles del resultado...</p>
-      <button type="button" class="btn btn-primary" id="modal-action-btn">Continuar</button>
+          <!-- 2. Tiempo Límite de Prueba -->
+          <div class="timer-registration-box">
+            <span class="timer-registration-label"
+              >⏱️ 2. Tiempo Límite para la Prueba:</span
+            >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.6rem;
+                flex-wrap: wrap;
+              "
+            >
+              <label
+                for="player-timer-min"
+                style="font-weight: 600; font-size: 0.9rem"
+                >Minutos:</label
+              >
+              <input
+                type="number"
+                id="player-timer-min"
+                class="input-timer-num"
+                value="2"
+                min="0"
+                max="59"
+              />
+              <label
+                for="player-timer-sec"
+                style="font-weight: 600; font-size: 0.9rem"
+                >Segundos:</label
+              >
+              <input
+                type="number"
+                id="player-timer-sec"
+                class="input-timer-num"
+                value="0"
+                min="0"
+                max="59"
+                step="5"
+              />
+            </div>
+          </div>
+
+          <!-- 3. Selección de Modo de Juego (Categoría Rápida vs Párrafo Personalizado) -->
+          <div class="modal-mode-selection">
+            <label
+              style="
+                display: block;
+                font-size: 0.85rem;
+                font-weight: 700;
+                margin-bottom: 0.4rem;
+                text-align: left;
+              "
+              >3. Elige el Modo de Juego:</label
+            >
+
+            <div class="modal-mode-tabs">
+              <button
+                type="button"
+                class="modal-tab-btn active"
+                id="modal-tab-category"
+              >
+                Categoría Rápida
+              </button>
+              <button type="button" class="modal-tab-btn" id="modal-tab-phrase">
+                Párrafo Personalizado
+              </button>
+            </div>
+
+            <!-- Opción A: Subcategorías de Categoría Rápida -->
+            <div id="modal-view-category" class="modal-subview">
+              <label
+                style="
+                  display: block;
+                  font-size: 0.8rem;
+                  font-weight: 600;
+                  margin-bottom: 0.3rem;
+                  text-align: left;
+                  color: var(--color-text-muted);
+                "
+                >Selecciona la subcategoría:</label
+              >
+              <div class="modal-subcategories-grid">
+                <button
+                  type="button"
+                  class="modal-btn-subcat selected"
+                  data-modal-cat="general"
+                >
+                  Cultura General
+                </button>
+                <button
+                  type="button"
+                  class="modal-btn-subcat"
+                  data-modal-cat="tecnologia"
+                >
+                  Tecnología
+                </button>
+                <button
+                  type="button"
+                  class="modal-btn-subcat"
+                  data-modal-cat="paises"
+                >
+                  Países / Ciudades
+                </button>
+                <button
+                  type="button"
+                  class="modal-btn-subcat"
+                  data-modal-cat="animales"
+                >
+                  Animales
+                </button>
+              </div>
+            </div>
+
+            <!-- Opción B: Ingreso de Párrafo Personalizado -->
+            <div id="modal-view-phrase" class="modal-subview d-none">
+              <label
+                style="
+                  display: block;
+                  font-size: 0.8rem;
+                  font-weight: 600;
+                  margin-bottom: 0.3rem;
+                  text-align: left;
+                  color: var(--color-text-muted);
+                "
+                >Ingresa el párrafo antes de iniciar:</label
+              >
+              <textarea
+                id="modal-paragraph-input"
+                class="textarea-styled"
+                placeholder="Ingresa aquí tu párrafo completo. Se seleccionará una palabra aleatoria de 3 o más letras para adivinar."
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="width: 100%; margin-top: 0.5rem; font-size: 1.1rem"
+          >
+            Iniciar Juego 🚀
+          </button>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <!-- Carga del Controlador Principal ES6 -->
-  <script type="module" src="js/app.js"></script>
-</body>
+    <!-- PANTALLA DE PREPARACIÓN OPACA ("¿ESTÁS LISTO PARA JUGAR?") -->
+    <div id="ready-overlay" class="ready-overlay">
+      <div class="ready-card">
+        <h2 class="ready-title">🎯 ¿Estás listo para jugar?</h2>
+        <p style="font-size: 1.05rem; color: var(--color-text-muted)">
+          Preparando palabra para el competidor:
+          <strong id="ready-player-name" style="color: var(--color-neon-cyan)"
+            >---</strong
+          >
+        </p>
+
+        <div class="ready-info-box">
+          <div>
+            Categoría:
+            <strong id="ready-category" style="color: var(--color-neon-cyan)"
+              >---</strong
+            >
+          </div>
+          <div>
+            Tiempo Asignado: ⏱️
+            <strong id="ready-timer" style="color: var(--color-neon-cyan)"
+              >02:00</strong
+            >
+          </div>
+        </div>
+
+        <p style="font-size: 0.9rem; color: var(--color-text-muted)">
+          El tablero y la palabra se revelarán en cuanto confirmes.
+        </p>
+
+        <button id="btn-ready-start" class="btn-ready-big">
+          ¡Estoy listo para jugar! 🚀
+        </button>
+      </div>
+    </div>
+
+    <!-- MODAL DE RESULTADOS (Ganado / Perdido con Cuadros de Avance) -->
+    <div class="modal-overlay" id="result-modal">
+      <div class="modal-card">
+        <h2 class="modal-title" id="modal-title">¡Resultado!</h2>
+        <p class="modal-word" id="modal-word">
+          La palabra era: <span>---</span>
+        </p>
+        <p id="modal-message">Detalles del resultado...</p>
+
+        <!-- Cuadros de Avance (Matriz de Historial Reciente) -->
+        <div id="progress-matrix-container" class="progress-matrix-container">
+          <span class="matrix-title"
+            >Cuadros de Avance (Partidas Recientes):</span
+          >
+          <div id="progress-matrix-list" class="progress-matrix-list"></div>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="modal-action-btn">
+          Continuar
+        </button>
+      </div>
+    </div>
+
+    <!-- Carga del Controlador Principal ES6 -->
+    <script type="module" src="js/app.js"></script>
+  </body>
 </html>
