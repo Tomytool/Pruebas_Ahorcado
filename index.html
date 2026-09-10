@@ -338,122 +338,78 @@
       </div>
     </footer>
 
-    <!-- MODAL DE INSCRIPCIÓN UNIFICADO DEL COMPETIDOR (NOMBRE + TIEMPO + MODO/CATEGORÍA O PÁRRAFO) -->
+    <!-- MODAL DE INSCRIPCIÓN UNIFICADO DEL COMPETIDOR (COMPACTO UI/UX PRO MAX) -->
     <div class="modal-overlay" id="player-modal">
-      <div class="modal-card modal-card-large">
-        <h2 class="modal-title text-success">🏆 Configuración de Partida</h2>
-        <p class="modal-word">
-          Ingresa tus datos y elige el modo de juego antes de comenzar la
-          prueba:
-        </p>
+      <div class="modal-card modal-card-large modal-card-compact">
+        <div class="modal-header-compact">
+          <h2 class="modal-title text-success" style="font-size: 1.35rem; margin: 0;">🏆 Configuración de Partida</h2>
+          <p class="modal-subtitle-compact">Ingresa tus datos antes de comenzar la prueba:</p>
+        </div>
 
-        <form id="player-form" class="player-form">
-          <!-- 1. Nombre del Competidor -->
-          <div>
-            <label
-              style="
-                display: block;
-                font-size: 0.85rem;
-                font-weight: 700;
-                margin-bottom: 0.3rem;
-                text-align: left;
-              "
-              >1. Nombre o Nickname:</label
-            >
-            <input
-              type="text"
-              id="player-name-input"
-              class="input-styled"
-              placeholder="Tu Nombre..."
-              maxlength="20"
-              required
-            />
-          </div>
+        <form id="player-form" class="player-form-compact">
+          <!-- Fila Superior: Nombre del Competidor + Tiempo Límite -->
+          <div class="form-row-top">
+            <!-- 1. Nombre -->
+            <div class="form-group-name">
+              <label for="player-name-input" class="label-compact">1. Nombre o Nickname:</label>
+              <input
+                type="text"
+                id="player-name-input"
+                class="input-styled input-compact"
+                placeholder="Tu Nombre..."
+                maxlength="20"
+                required
+              />
+            </div>
 
-          <!-- 2. Tiempo Límite de Prueba -->
-          <div class="timer-registration-box">
-            <span class="timer-registration-label"
-              >⏱️ 2. Tiempo Límite para la Prueba:</span
-            >
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.6rem;
-                flex-wrap: wrap;
-              "
-            >
-              <label
-                for="player-timer-min"
-                style="font-weight: 600; font-size: 0.9rem"
-                >Minutos:</label
-              >
-              <input
-                type="number"
-                id="player-timer-min"
-                class="input-timer-num"
-                value="2"
-                min="0"
-                max="59"
-              />
-              <label
-                for="player-timer-sec"
-                style="font-weight: 600; font-size: 0.9rem"
-                >Segundos:</label
-              >
-              <input
-                type="number"
-                id="player-timer-sec"
-                class="input-timer-num"
-                value="0"
-                min="0"
-                max="59"
-                step="5"
-              />
+            <!-- 2. Tiempo Límite -->
+            <div class="form-group-timer">
+              <label class="label-compact">⏱️ 2. Tiempo Límite:</label>
+              <div class="timer-inputs-compact">
+                <span class="timer-unit-label">Min:</span>
+                <input
+                  type="number"
+                  id="player-timer-min"
+                  class="input-timer-num input-timer-compact"
+                  value="2"
+                  min="0"
+                  max="59"
+                />
+                <span class="timer-unit-label">Seg:</span>
+                <input
+                  type="number"
+                  id="player-timer-sec"
+                  class="input-timer-num input-timer-compact"
+                  value="0"
+                  min="0"
+                  max="59"
+                  step="5"
+                />
+              </div>
             </div>
           </div>
 
-          <!-- 3. Selección de Modo de Juego (Categoría Rápida vs Párrafo Personalizado) -->
-          <div class="modal-mode-selection">
-            <label
-              style="
-                display: block;
-                font-size: 0.85rem;
-                font-weight: 700;
-                margin-bottom: 0.4rem;
-                text-align: left;
-              "
-              >3. Elige el Modo de Juego:</label
-            >
-
-            <div class="modal-mode-tabs">
-              <button
-                type="button"
-                class="modal-tab-btn active"
-                id="modal-tab-category"
-              >
-                Categoría Rápida
-              </button>
-              <button type="button" class="modal-tab-btn" id="modal-tab-phrase">
-                Párrafo Personalizado
-              </button>
+          <!-- 3. Selección de Modo de Juego -->
+          <div class="modal-mode-selection modal-mode-compact">
+            <div class="mode-header-compact">
+              <label class="label-compact" style="margin: 0;">3. Modo de Juego:</label>
+              <div class="modal-mode-tabs modal-mode-tabs-compact">
+                <button
+                  type="button"
+                  class="modal-tab-btn active"
+                  id="modal-tab-category"
+                >
+                  Categoría Rápida
+                </button>
+                <button type="button" class="modal-tab-btn" id="modal-tab-phrase">
+                  Párrafo Personalizado
+                </button>
+              </div>
             </div>
 
             <!-- Opción A: Subcategorías de Categoría Rápida -->
             <div id="modal-view-category" class="modal-subview">
-              <label
-                style="
-                  display: block;
-                  font-size: 0.8rem;
-                  font-weight: 600;
-                  margin-bottom: 0.3rem;
-                  text-align: left;
-                  color: var(--color-text-muted);
-                "
-                >Selecciona la subcategoría:</label
-              >
-              <div class="modal-subcategories-grid">
+              <div class="modal-subcategories-grid modal-subcategories-compact">
                 <button
                   type="button"
                   class="modal-btn-subcat selected"
@@ -487,30 +443,18 @@
 
             <!-- Opción B: Ingreso de Párrafo Personalizado -->
             <div id="modal-view-phrase" class="modal-subview d-none">
-              <label
-                style="
-                  display: block;
-                  font-size: 0.8rem;
-                  font-weight: 600;
-                  margin-bottom: 0.3rem;
-                  text-align: left;
-                  color: var(--color-text-muted);
-                "
-                >Ingresa el párrafo antes de iniciar:</label
-              >
               <textarea
                 id="modal-paragraph-input"
-                class="textarea-styled"
+                class="textarea-styled textarea-compact"
                 placeholder="Ingresa aquí tu párrafo completo. Se seleccionará una palabra aleatoria de 3 o más letras para adivinar."
-                rows="3"
+                rows="2"
               ></textarea>
             </div>
           </div>
 
           <button
             type="submit"
-            class="btn btn-primary"
-            style="width: 100%; margin-top: 0.5rem; font-size: 1.1rem"
+            class="btn btn-primary btn-submit-compact"
           >
             Iniciar Juego 🚀
           </button>

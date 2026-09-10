@@ -344,6 +344,157 @@ body {
   max-width: 520px;
 }
 
+/* ESTILOS COMPACTOS DEL MODAL DE INSCRIPCIÓN (UI/UX PRO MAX) */
+.modal-card-compact {
+  max-width: 500px;
+  width: 95%;
+  max-height: calc(100vh - 1.5rem);
+  overflow-y: auto;
+  padding: 1.15rem 1.35rem;
+  gap: 0.65rem;
+  border-radius: var(--radius-lg);
+}
+
+.modal-header-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-align: center;
+}
+
+.modal-subtitle-compact {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.player-form-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.2rem;
+}
+
+.form-row-top {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.form-group-name {
+  flex: 1 1 200px;
+  text-align: left;
+}
+
+.form-group-timer {
+  flex: 0 0 auto;
+  text-align: left;
+  background-color: rgba(11, 29, 32, 0.6);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.35rem 0.6rem;
+}
+
+.label-compact {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  color: var(--color-text-main);
+}
+
+.input-compact {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.timer-inputs-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.timer-unit-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.input-timer-compact {
+  width: 48px;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.9rem;
+}
+
+.modal-mode-compact {
+  background-color: rgba(11, 29, 32, 0.5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.mode-header-compact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.modal-mode-tabs-compact {
+  margin-bottom: 0;
+  padding: 0.15rem;
+}
+
+.modal-mode-tabs-compact .modal-tab-btn {
+  padding: 0.28rem 0.6rem;
+  font-size: 0.78rem;
+}
+
+.modal-subcategories-compact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.modal-subcategories-compact .modal-btn-subcat {
+  padding: 0.4rem 0.45rem;
+  font-size: 0.8rem;
+}
+
+.textarea-compact {
+  padding: 0.45rem;
+  font-size: 0.82rem;
+  min-height: 48px;
+}
+
+.btn-submit-compact {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  margin-top: 0.2rem;
+}
+
+@media (max-width: 480px) {
+  .modal-card-compact {
+    padding: 0.85rem 1rem;
+    gap: 0.5rem;
+  }
+  .form-row-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .form-group-timer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
 .player-form {
   display: flex;
   flex-direction: column;
