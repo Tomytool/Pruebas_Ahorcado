@@ -46,7 +46,8 @@ export class UIManager {
     this.keyboardContainer = document.getElementById('keyboard-display');
     this.attemptsCountEl = document.getElementById('attempts-count');
     this.attemptsBarEl = document.getElementById('attempts-progress-bar');
-    this.paragraphWordsContainer = document.getElementById('paragraph-words-preview');
+    this.paragraphWordsContainer = document.getElementById('words-drawer');
+    this.wordsDrawerToggle = document.getElementById('words-drawer-toggle');
     this.paragraphWordsList = document.getElementById('paragraph-words-list');
 
     // Modal de Resultados y Cuadros de Avance
@@ -253,13 +254,17 @@ export class UIManager {
   }
 
   /**
-   * Renderiza las fichas de letras de la palabra secreta.
+   * Renderiza las fichas de letras de la palabra secreta con auto-escalado fluido.
    * @param {Array<{char: string, revealed: boolean, isSpace: boolean}>} displayState 
    * @param {Function} getCoordsCallback 
    */
   renderWord(displayState, getCoordsCallback) {
     if (!this.wordContainer) return;
     this.wordContainer.innerHTML = '';
+
+    // Asignar cantidad total de caracteres al estilo para escalado matemático
+    const totalTiles = displayState.length || 1;
+    this.wordContainer.style.setProperty('--tile-count', totalTiles);
 
     displayState.forEach(({ char, revealed, isSpace }, index) => {
       const tile = document.createElement('div');
@@ -339,7 +344,7 @@ export class UIManager {
   }
 
   /**
-   * Renderiza el teclado virtual con estados táctiles.
+   * Renderiza el teclado virtual estructurado en 3 filas de 9 letras (A-I, J-Q, R-Z).
    * @param {Set<string>} guessedLetters 
    * @param {Set<string>} wrongLetters 
    * @param {Function} onKeyPressCallback 
@@ -348,32 +353,44 @@ export class UIManager {
     if (!this.keyboardContainer) return;
     this.keyboardContainer.innerHTML = '';
 
-    const alphabet = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
+    // Estructura fija de 3 filas de 9 teclas (27 caracteres del alfabeto hispano)
+    const rows = [
+      'ABCDEFGHI'.split(''),
+      'JKLMNÑOPQ'.split(''),
+      'RSTUVWXYZ'.split('')
+    ];
 
-    alphabet.forEach(letter => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'key-btn';
-      button.textContent = letter;
-      button.setAttribute('data-letter', letter);
+    rows.forEach(rowLetters => {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'keyboard-row';
 
-      if (guessedLetters.has(letter)) {
-        button.classList.add('correct');
-        button.disabled = true;
-      } else if (wrongLetters.has(letter)) {
-        button.classList.add('wrong');
-        button.disabled = true;
-      }
+      rowLetters.forEach(letter => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'key-btn';
+        button.textContent = letter;
+        button.setAttribute('data-letter', letter);
 
-      button.addEventListener('click', () => {
-        if (!button.disabled) {
-          button.classList.add('pressed');
-          setTimeout(() => button.classList.remove('pressed'), 150);
-          onKeyPressCallback(letter);
+        if (guessedLetters.has(letter)) {
+          button.classList.add('correct');
+          button.disabled = true;
+        } else if (wrongLetters.has(letter)) {
+          button.classList.add('wrong');
+          button.disabled = true;
         }
+
+        button.addEventListener('click', () => {
+          if (!button.disabled) {
+            button.classList.add('pressed');
+            setTimeout(() => button.classList.remove('pressed'), 150);
+            onKeyPressCallback(letter);
+          }
+        });
+
+        rowEl.appendChild(button);
       });
 
-      this.keyboardContainer.appendChild(button);
+      this.keyboardContainer.appendChild(rowEl);
     });
   }
 

@@ -42,15 +42,17 @@
             class="player-badge"
             title="Haz clic para cambiar perfil o partida"
           >
-            <span>👤 <strong id="player-name-display">Competidor</strong></span>
+            <span class="player-name-wrap"
+              >👤 <strong id="player-name-display">Competidor</strong></span
+            >
             <button
               id="edit-player-btn"
               class="btn-icon-reset"
               title="Nueva Partida / Configuración"
             >
               <svg
-                width="14"
-                height="14"
+                width="13"
+                height="13"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -70,16 +72,18 @@
             class="score-badge streak-badge"
             title="Racha de victorias consecutivas"
           >
-            🔥 Racha: <strong id="streak-count">0</strong>
+            🔥 <span class="badge-label-text">Racha:</span>
+            <strong id="streak-count">0</strong>
           </div>
 
           <div class="score-badge" title="Palabras adivinadas acumuladas">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
               <path
                 d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
               />
             </svg>
-            <span>Adivinadas: <strong id="words-guessed-count">0</strong></span>
+            <span class="badge-label-text">Adivinadas:</span>
+            <strong id="words-guessed-count">0</strong>
           </div>
 
           <button
@@ -88,8 +92,8 @@
             title="Reiniciar absolutamente todo el juego"
           >
             <svg
-              width="14"
-              height="14"
+              width="13"
+              height="13"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -98,7 +102,7 @@
               <polyline points="1 4 1 10 7 10"></polyline>
               <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
             </svg>
-            Reiniciar Todo
+            <span class="btn-reset-text">Reiniciar</span>
           </button>
         </div>
       </div>
@@ -106,98 +110,174 @@
 
     <!-- CONTENIDO PRINCIPAL -->
     <main class="container main-layout">
-      <!-- Pestañas de Selección de Modo de Juego en Tablero -->
-      <nav class="mode-tabs">
-        <button type="button" class="tab-btn active" id="tab-btn-category">
-          Categorías Rápidas
+      <!-- Cajón Desplegable de Ajustes & Opciones de Partida -->
+      <div class="controls-collapsible" id="controls-collapsible">
+        <button
+          type="button"
+          class="btn-toggle-drawer"
+          id="btn-toggle-drawer"
+          aria-expanded="false"
+          title="Abrir o cerrar opciones de configuración y categorías"
+        >
+          <span class="drawer-btn-title">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+              ></path>
+            </svg>
+            ⚙️ Ajustes de Partida & Modo
+          </span>
+          <svg
+            class="drawer-arrow"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
         </button>
-        <button type="button" class="tab-btn" id="tab-btn-phrase">
-          Párrafo Personalizado
-        </button>
-      </nav>
 
-      <!-- Panel de Configuración Rápida del Temporizador -->
-      <div class="timer-config-panel">
-        <span class="timer-config-title">
-          ⏱️ Configuración del Temporizador:
-        </span>
+        <div class="controls-drawer-content" id="controls-drawer-content">
+          <!-- Pestañas de Selección de Modo de Juego en Tablero -->
+          <nav class="mode-tabs">
+            <button type="button" class="tab-btn active" id="tab-btn-category">
+              Categorías Rápidas
+            </button>
+            <button type="button" class="tab-btn" id="tab-btn-phrase">
+              Párrafo Personalizado
+            </button>
+          </nav>
 
-        <div class="timer-inputs-group">
-          <label
-            for="timer-input-min"
-            style="font-size: 0.85rem; font-weight: 600"
-            >Min:</label
-          >
-          <input
-            type="number"
-            id="timer-input-min"
-            class="input-timer-num"
-            value="2"
-            min="0"
-            max="59"
-          />
-          <label
-            for="timer-input-sec"
-            style="font-size: 0.85rem; font-weight: 600"
-            >Seg:</label
-          >
-          <input
-            type="number"
-            id="timer-input-sec"
-            class="input-timer-num"
-            value="00"
-            min="0"
-            max="59"
-            step="5"
-          />
-        </div>
+          <!-- Panel de Configuración Rápida del Temporizador -->
+          <div class="timer-config-panel">
+            <span class="timer-config-title">
+              ⏱️ Configuración del Temporizador:
+            </span>
 
-        <div class="timer-presets">
-          <button type="button" class="timer-preset-btn" data-timer-preset="60">
-            1 Min
-          </button>
-          <button
-            type="button"
-            class="timer-preset-btn active"
-            data-timer-preset="120"
-          >
-            2 Min
-          </button>
-          <button
-            type="button"
-            class="timer-preset-btn"
-            data-timer-preset="180"
-          >
-            3 Min
-          </button>
-          <button
-            type="button"
-            class="timer-preset-btn"
-            data-timer-preset="300"
-          >
-            5 Min
-          </button>
+            <div class="timer-inputs-group">
+              <label
+                for="timer-input-min"
+                style="font-size: 0.85rem; font-weight: 600"
+                >Min:</label
+              >
+              <input
+                type="number"
+                id="timer-input-min"
+                class="input-timer-num"
+                value="2"
+                min="0"
+                max="59"
+              />
+              <label
+                for="timer-input-sec"
+                style="font-size: 0.85rem; font-weight: 600"
+                >Seg:</label
+              >
+              <input
+                type="number"
+                id="timer-input-sec"
+                class="input-timer-num"
+                value="00"
+                min="0"
+                max="59"
+                step="5"
+              />
+            </div>
+
+            <div class="timer-presets">
+              <button
+                type="button"
+                class="timer-preset-btn"
+                data-timer-preset="60"
+              >
+                1 Min
+              </button>
+              <button
+                type="button"
+                class="timer-preset-btn active"
+                data-timer-preset="120"
+              >
+                2 Min
+              </button>
+              <button
+                type="button"
+                class="timer-preset-btn"
+                data-timer-preset="180"
+              >
+                3 Min
+              </button>
+              <button
+                type="button"
+                class="timer-preset-btn"
+                data-timer-preset="300"
+              >
+                5 Min
+              </button>
+            </div>
+          </div>
+
+          <!-- Vista Modo Párrafo Personalizado -->
+          <section id="view-phrase-mode" class="mode-section d-none">
+            <form id="phrase-form" class="phrase-form">
+              <textarea
+                id="phrase-input"
+                class="textarea-styled"
+                placeholder="Ingresa un párrafo completo o texto (ej: 'El desarrollo de software con JavaScript permite crear aplicaciones interactivas e innovadoras'). Se extraerán las palabras candidatas y se elegirá una al azar para descubrir."
+                rows="2"
+              ></textarea>
+              <button
+                type="submit"
+                class="btn btn-accent"
+                style="align-self: flex-end"
+              >
+                Procesar Párrafo y Jugar
+              </button>
+            </form>
+          </section>
+
+          <!-- Vista Modo Categorías -->
+          <section id="view-category-mode" class="mode-section">
+            <div class="category-grid">
+              <button
+                type="button"
+                class="btn-category selected"
+                data-category="general"
+              >
+                General
+              </button>
+              <button
+                type="button"
+                class="btn-category"
+                data-category="tecnologia"
+              >
+                Tecnología
+              </button>
+              <button type="button" class="btn-category" data-category="paises">
+                Países / Ciudades
+              </button>
+              <button
+                type="button"
+                class="btn-category"
+                data-category="animales"
+              >
+                Animales
+              </button>
+            </div>
+          </section>
         </div>
       </div>
 
-      <!-- Vista Modo Párrafo Personalizado -->
-      <section id="view-phrase-mode" class="mode-section d-none">
-        <form id="phrase-form" class="phrase-form">
-          <textarea
-            id="phrase-input"
-            class="textarea-styled"
-            placeholder="Ingresa un párrafo completo o texto (ej: 'El desarrollo de software con JavaScript permite crear aplicaciones interactivas e innovadoras'). Se extraerán las palabras candidatas y se elegirá una al azar para descubrir."
-            rows="3"
-          ></textarea>
-          <button
-            type="submit"
-            class="btn btn-accent"
-            style="align-self: flex-end"
-          >
-            Procesar Párrafo y Jugar
-          </button>
-        </form>
-      </section>
       <!-- TABLERO PRINCIPAL DEL JUEGO -->
       <section class="game-card" id="game-card">
         <!-- Columna Escenario 3D Three.js -->
@@ -257,34 +337,42 @@
           </div>
         </div>
 
-        <!-- Columna Lateral para Palabras Descubribles -->
-        <aside id="paragraph-words-preview" class="words-sidebar-column d-none">
-          <div class="words-sidebar-header">
-            <span class="words-preview-title">📖 Palabras Descubribles</span>
-            <span id="words-count-badge" class="words-count-badge">0</span>
-          </div>
-          <div id="paragraph-words-list" class="paragraph-words-list"></div>
-        </aside>
-      </section>
-      <!-- Vista Modo Categorías -->
-      <section id="view-category-mode" class="mode-section">
-        <div class="category-grid">
+        <!-- Menú Desplegable de Palabras a Descubrir (Bajo el Cuerpo del Juego) -->
+        <div id="words-drawer" class="words-drawer-container">
           <button
+            id="words-drawer-toggle"
+            class="words-drawer-toggle-btn"
             type="button"
-            class="btn-category selected"
-            data-category="general"
+            aria-expanded="false"
+            aria-controls="words-drawer-content"
+            title="Abrir o cerrar lista de palabras a descubrir"
           >
-            General
+            <div class="words-drawer-header-left">
+              <span class="words-drawer-icon">📖</span>
+              <span class="words-drawer-title">PALABRAS A DESCUBRIR</span>
+            </div>
+            <div class="words-drawer-header-right">
+              <span id="words-count-badge" class="words-count-badge">0</span>
+              <svg
+                class="words-drawer-arrow"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
           </button>
-          <button type="button" class="btn-category" data-category="tecnologia">
-            Tecnología
-          </button>
-          <button type="button" class="btn-category" data-category="paises">
-            Países / Ciudades
-          </button>
-          <button type="button" class="btn-category" data-category="animales">
-            Animales
-          </button>
+          <div id="words-drawer-content" class="words-drawer-content">
+            <div id="paragraph-words-list" class="paragraph-words-list">
+              <!-- Generado dinámicamente con chips estilo píldora -->
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -342,8 +430,15 @@
     <div class="modal-overlay" id="player-modal">
       <div class="modal-card modal-card-large modal-card-compact">
         <div class="modal-header-compact">
-          <h2 class="modal-title text-success" style="font-size: 1.35rem; margin: 0;">🏆 Configuración de Partida</h2>
-          <p class="modal-subtitle-compact">Ingresa tus datos antes de comenzar la prueba:</p>
+          <h2
+            class="modal-title text-success"
+            style="font-size: 1.35rem; margin: 0"
+          >
+            🏆 Configuración de Partida
+          </h2>
+          <p class="modal-subtitle-compact">
+            Ingresa tus datos antes de comenzar la prueba:
+          </p>
         </div>
 
         <form id="player-form" class="player-form-compact">
@@ -351,7 +446,9 @@
           <div class="form-row-top">
             <!-- 1. Nombre -->
             <div class="form-group-name">
-              <label for="player-name-input" class="label-compact">1. Nombre o Nickname:</label>
+              <label for="player-name-input" class="label-compact"
+                >1. Nombre o Nickname:</label
+              >
               <input
                 type="text"
                 id="player-name-input"
@@ -392,7 +489,9 @@
           <!-- 3. Selección de Modo de Juego -->
           <div class="modal-mode-selection modal-mode-compact">
             <div class="mode-header-compact">
-              <label class="label-compact" style="margin: 0;">3. Modo de Juego:</label>
+              <label class="label-compact" style="margin: 0"
+                >3. Modo de Juego:</label
+              >
               <div class="modal-mode-tabs modal-mode-tabs-compact">
                 <button
                   type="button"
@@ -401,7 +500,11 @@
                 >
                   Categoría Rápida
                 </button>
-                <button type="button" class="modal-tab-btn" id="modal-tab-phrase">
+                <button
+                  type="button"
+                  class="modal-tab-btn"
+                  id="modal-tab-phrase"
+                >
                   Párrafo Personalizado
                 </button>
               </div>
@@ -452,10 +555,7 @@
             </div>
           </div>
 
-          <button
-            type="submit"
-            class="btn btn-primary btn-submit-compact"
-          >
+          <button type="submit" class="btn btn-primary btn-submit-compact">
             Iniciar Juego 🚀
           </button>
         </form>

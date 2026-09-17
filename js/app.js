@@ -161,6 +161,27 @@ class AppController {
   }
 
   bindEvents() {
+    // Manejo del Cajón Colapsable de Ajustes
+    const toggleDrawerBtn = document.getElementById('btn-toggle-drawer');
+    const drawerContent = document.getElementById('controls-drawer-content');
+    if (toggleDrawerBtn && drawerContent) {
+      toggleDrawerBtn.addEventListener('click', () => {
+        const isExpanded = drawerContent.classList.toggle('expanded');
+        toggleDrawerBtn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+        toggleDrawerBtn.classList.toggle('active', isExpanded);
+      });
+    }
+
+    // Manejo del Menú Desplegable de Palabras a Descubrir (Bajo el cuerpo del juego)
+    const wordsDrawerToggle = document.getElementById('words-drawer-toggle');
+    const wordsDrawer = document.getElementById('words-drawer');
+    if (wordsDrawerToggle && wordsDrawer) {
+      wordsDrawerToggle.addEventListener('click', () => {
+        const isExpanded = wordsDrawer.classList.toggle('expanded');
+        wordsDrawerToggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+      });
+    }
+
     // Cambio de Modo en Tablero
     const tabBtnCategory = document.getElementById('tab-btn-category');
     const tabBtnPhrase = document.getElementById('tab-btn-phrase');
@@ -193,6 +214,16 @@ class AppController {
         categoryButtons.forEach(b => b.classList.remove('selected'));
         e.currentTarget.classList.add('selected');
         this.currentCategory = cat;
+
+        // Si estamos en mobile, cerramos suavemente el drawer tras seleccionar
+        if (window.innerWidth < 900 && drawerContent) {
+          drawerContent.classList.remove('expanded');
+          if (toggleDrawerBtn) {
+            toggleDrawerBtn.setAttribute('aria-expanded', 'false');
+            toggleDrawerBtn.classList.remove('active');
+          }
+        }
+
         this.startNewCategoryGame(cat);
       });
     });
@@ -365,7 +396,11 @@ class AppController {
     this.ui.renderWord(this.game.getWordDisplayState(), (x, y) => {
       this.particles.burstSparkles(x, y, 15);
     });
-    this.ui.renderCandidateWords(this.game.candidateWords, this.game.status !== 'PLAYING' ? this.game.secretWord : '');
+    // Renderizar banco de palabras en el menú desplegable inferior
+    this.ui.renderCandidateWords(
+      this.game.candidateWords || [],
+      this.game.status !== 'PLAYING' ? this.game.secretWord : ''
+    );
     this.ui.renderKeyboard(
       this.game.guessedLetters,
       this.game.wrongLetters,

@@ -1,6 +1,6 @@
 {
   "name": "pruebas_ahorcado",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Prototipo inicial del juego el ahorcado",
   "main": "index.js",
   "scripts": {

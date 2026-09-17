@@ -53,17 +53,20 @@ export class ThreeHangmanStage {
     this.container.innerHTML = '';
     this.container.appendChild(this.renderer.domElement);
 
-    // 4. Luces
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    // 4. Luces (Ajustadas para maniquí cerámico/arcilla suave mate con sombras limpias)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
     this.scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0x00f2fe, 1.2);
-    dirLight.position.set(5, 8, 5);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.25);
+    dirLight.position.set(4, 8, 5);
     dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 1024;
+    dirLight.shadow.mapSize.height = 1024;
     this.scene.add(dirLight);
 
-    const pointLight = new THREE.PointLight(0xd97736, 1.5, 10);
-    pointLight.position.set(-3, 4, 2);
+    // Luz de contorno / acento cyan suave para integrar silueta contra fondo oscuro
+    const pointLight = new THREE.PointLight(0x00f2fe, 0.45, 12);
+    pointLight.position.set(-3, 4, 3);
     this.scene.add(pointLight);
 
     // 5. Construcción de Horca 3D y Personaje
@@ -86,24 +89,16 @@ export class ThreeHangmanStage {
   createGallows() {
     this.gallowsGroup = new THREE.Group();
 
-    // Materiales de Madera y Metal Neón
+    // Materiales de Madera Oscura y Acentos Arcade
     const woodMat = new THREE.MeshStandardMaterial({
-      color: 0x185359,
-      roughness: 0.6,
-      metalness: 0.2
-    });
-
-    const accentMat = new THREE.MeshStandardMaterial({
-      color: 0xd97736,
-      roughness: 0.3,
-      metalness: 0.7,
-      emissive: 0xd97736,
-      emissiveIntensity: 0.2
+      color: 0x143c44,
+      roughness: 0.65,
+      metalness: 0.15
     });
 
     const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x0d3539,
-      roughness: 0.8
+      color: 0x0c252a,
+      roughness: 0.85
     });
 
     // Base de la Horca
@@ -134,99 +129,263 @@ export class ThreeHangmanStage {
     supportMesh.rotation.z = -Math.PI / 4;
     this.gallowsGroup.add(supportMesh);
 
-    // Cuerda del Ahorcado
-    const ropeGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.75, 8);
-    const ropeMat = new THREE.MeshStandardMaterial({ color: 0xd97736, roughness: 0.9 });
+    // Cuerda del Ahorcado (Tono cáñamo dorado suave)
+    const ropeGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.78, 12);
+    const ropeMat = new THREE.MeshStandardMaterial({
+      color: 0xcaa472,
+      roughness: 0.85,
+      metalness: 0.05
+    });
     this.ropeMesh = new THREE.Mesh(ropeGeo, ropeMat);
-    this.ropeMesh.position.set(0.6, 1.7, 0);
+    this.ropeMesh.position.set(0.6, 1.71, 0);
+    this.ropeMesh.castShadow = true;
     this.gallowsGroup.add(this.ropeMesh);
 
     this.scene.add(this.gallowsGroup);
   }
 
+  /**
+   * Crea el muñeco humanoide estilizado (estilo mannequin minimalista blanco/gris suave).
+   * Basado en la estética de figura de arcilla / porcelana de diseño.
+   */
   createCharacter() {
     this.characterGroup = new THREE.Group();
-    this.characterGroup.position.set(0.6, 1.3, 0); // Posición suspendida bajo la cuerda
+    this.characterGroup.position.set(0.6, 1.32, 0); // Suspendido en el extremo inferior de la cuerda
 
-    const cyanNeonMat = new THREE.MeshStandardMaterial({
-      color: 0x00f2fe,
-      roughness: 0.2,
-      metalness: 0.8,
-      emissive: 0x00f2fe,
-      emissiveIntensity: 0.3
+    // Material del maniquí: Blanco grisáceo mate ultra suave (Clean Clay Mannequin)
+    const mannequinMat = new THREE.MeshStandardMaterial({
+      color: 0xebedf2,
+      roughness: 0.36,
+      metalness: 0.02
     });
 
-    const jointMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      roughness: 0.1,
-      metalness: 0.9
+    const ropeNooseMat = new THREE.MeshStandardMaterial({
+      color: 0xcaa472,
+      roughness: 0.85,
+      metalness: 0.05
     });
 
-    // 1. Cabeza (Índice 0)
+    // -------------------------------------------------------------
+    // PARTE 1: Cabeza + Cuello + Lazo de Horca (Índice 0)
+    // -------------------------------------------------------------
     const headGroup = new THREE.Group();
-    const headGeo = new THREE.SphereGeometry(0.35, 24, 24);
-    const headMesh = new THREE.Mesh(headGeo, cyanNeonMat);
+
+    // Cabeza: Esfera limpia y lisa (sin rasgos faciales toscos)
+    const headGeo = new THREE.SphereGeometry(0.36, 32, 32);
+    const headMesh = new THREE.Mesh(headGeo, mannequinMat);
+    headMesh.position.set(0, -0.36, 0);
+    headMesh.castShadow = true;
     headGroup.add(headMesh);
-    // Ojos Neón estilizados
-    const eyeGeo = new THREE.SphereGeometry(0.06, 12, 12);
-    const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-    eyeL.position.set(-0.12, 0.05, 0.3);
-    const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-    eyeR.position.set(0.12, 0.05, 0.3);
-    headGroup.add(eyeL, eyeR);
-    headGroup.position.set(0, -0.4, 0);
+
+    // Cuello esbelto
+    const neckGeo = new THREE.CylinderGeometry(0.08, 0.09, 0.22, 20);
+    const neckMesh = new THREE.Mesh(neckGeo, mannequinMat);
+    neckMesh.position.set(0, -0.68, 0);
+    neckMesh.castShadow = true;
+    headGroup.add(neckMesh);
+
+    // Lazo de la soga alrededor del cuello
+    const nooseGeo = new THREE.TorusGeometry(0.12, 0.032, 12, 24);
+    const nooseMesh = new THREE.Mesh(nooseGeo, ropeNooseMat);
+    nooseMesh.rotation.x = Math.PI / 2;
+    nooseMesh.position.set(0, -0.69, 0);
+    headGroup.add(nooseMesh);
+
+    // Nudo corredizo de la soga
+    const knotGeo = new THREE.SphereGeometry(0.045, 12, 12);
+    const knotMesh = new THREE.Mesh(knotGeo, ropeNooseMat);
+    knotMesh.position.set(0.12, -0.69, 0.02);
+    headGroup.add(knotMesh);
+
     this.characterGroup.add(headGroup);
 
-    // 2. Torso (Índice 1)
+    // -------------------------------------------------------------
+    // PARTE 2: Torso estilizado + Pelvis (Índice 1)
+    // -------------------------------------------------------------
     const torsoGroup = new THREE.Group();
-    const torsoGeo = new THREE.CylinderGeometry(0.25, 0.18, 1.1, 16);
-    const torsoMesh = new THREE.Mesh(torsoGeo, cyanNeonMat);
-    torsoGroup.add(torsoMesh);
-    torsoGroup.position.set(0, -1.2, 0);
+
+    // Hombros curvados
+    const shoulderBarGeo = new THREE.CylinderGeometry(0.075, 0.075, 0.58, 16);
+    const shoulderBarMesh = new THREE.Mesh(shoulderBarGeo, mannequinMat);
+    shoulderBarMesh.rotation.z = Math.PI / 2;
+    shoulderBarMesh.position.set(0, -0.84, 0);
+    shoulderBarMesh.castShadow = true;
+    torsoGroup.add(shoulderBarMesh);
+
+    const shoulderLGeo = new THREE.SphereGeometry(0.075, 16, 16);
+    const shoulderLMesh = new THREE.Mesh(shoulderLGeo, mannequinMat);
+    shoulderLMesh.position.set(-0.29, -0.84, 0);
+    const shoulderRMesh = new THREE.Mesh(shoulderLGeo, mannequinMat);
+    shoulderRMesh.position.set(0.29, -0.84, 0);
+    torsoGroup.add(shoulderLMesh, shoulderRMesh);
+
+    // Pecho / Caja torácica suave
+    const chestGeo = new THREE.CylinderGeometry(0.23, 0.165, 0.55, 24);
+    const chestMesh = new THREE.Mesh(chestGeo, mannequinMat);
+    chestMesh.position.set(0, -1.14, 0);
+    chestMesh.scale.set(1, 1, 0.8); // Suave aplanamiento en Z
+    chestMesh.castShadow = true;
+    torsoGroup.add(chestMesh);
+
+    // Cintura y Pelvis estilizada
+    const pelvisGeo = new THREE.CylinderGeometry(0.165, 0.185, 0.38, 24);
+    const pelvisMesh = new THREE.Mesh(pelvisGeo, mannequinMat);
+    pelvisMesh.position.set(0, -1.56, 0);
+    pelvisMesh.scale.set(1, 1, 0.78);
+    pelvisMesh.castShadow = true;
+    torsoGroup.add(pelvisMesh);
+
+    // Articulaciones de cadera
+    const hipGeo = new THREE.SphereGeometry(0.075, 16, 16);
+    const hipL = new THREE.Mesh(hipGeo, mannequinMat);
+    hipL.position.set(-0.13, -1.72, 0);
+    const hipR = new THREE.Mesh(hipGeo, mannequinMat);
+    hipR.position.set(0.13, -1.72, 0);
+    torsoGroup.add(hipL, hipR);
+
     this.characterGroup.add(torsoGroup);
 
-    // 3. Brazo Izquierdo (Índice 2)
+    // -------------------------------------------------------------
+    // PARTE 3: Brazo Izquierdo (Índice 2)
+    // -------------------------------------------------------------
     const armLGroup = new THREE.Group();
-    const armLGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.9, 12);
-    const armLMesh = new THREE.Mesh(armLGeo, jointMat);
-    armLMesh.position.set(0, -0.4, 0);
-    armLGroup.add(armLMesh);
-    armLGroup.position.set(-0.35, -0.8, 0);
-    armLGroup.rotation.z = Math.PI / 8;
+    armLGroup.position.set(-0.30, -0.86, 0);
+    armLGroup.rotation.z = 0.06; // Caída relajada vertical
+
+    // Brazo superior
+    const upperArmGeo = new THREE.CylinderGeometry(0.058, 0.048, 0.52, 16);
+    const upperArmL = new THREE.Mesh(upperArmGeo, mannequinMat);
+    upperArmL.position.set(0, -0.26, 0);
+    upperArmL.castShadow = true;
+    armLGroup.add(upperArmL);
+
+    // Codo
+    const elbowGeo = new THREE.SphereGeometry(0.048, 12, 12);
+    const elbowL = new THREE.Mesh(elbowGeo, mannequinMat);
+    elbowL.position.set(0, -0.52, 0);
+    armLGroup.add(elbowL);
+
+    // Antebrazo
+    const foreArmGeo = new THREE.CylinderGeometry(0.048, 0.040, 0.50, 16);
+    const foreArmL = new THREE.Mesh(foreArmGeo, mannequinMat);
+    foreArmL.position.set(0, -0.77, 0);
+    foreArmL.castShadow = true;
+    armLGroup.add(foreArmL);
+
+    // Mano estilizada (cápsula suave sin dedos exagerados)
+    const handGeo = new THREE.SphereGeometry(0.040, 12, 12);
+    const handL = new THREE.Mesh(handGeo, mannequinMat);
+    handL.position.set(0, -1.04, 0);
+    handL.scale.set(0.8, 1.6, 0.35);
+    handL.castShadow = true;
+    armLGroup.add(handL);
+
     this.characterGroup.add(armLGroup);
 
-    // 4. Brazo Derecho (Índice 3)
+    // -------------------------------------------------------------
+    // PARTE 4: Brazo Derecho (Índice 3)
+    // -------------------------------------------------------------
     const armRGroup = new THREE.Group();
-    const armRGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.9, 12);
-    const armRMesh = new THREE.Mesh(armRGeo, jointMat);
-    armRMesh.position.set(0, -0.4, 0);
-    armRGroup.add(armRMesh);
-    armRGroup.position.set(0.35, -0.8, 0);
-    armRGroup.rotation.z = -Math.PI / 8;
+    armRGroup.position.set(0.30, -0.86, 0);
+    armRGroup.rotation.z = -0.06;
+
+    const upperArmR = new THREE.Mesh(upperArmGeo, mannequinMat);
+    upperArmR.position.set(0, -0.26, 0);
+    upperArmR.castShadow = true;
+    armRGroup.add(upperArmR);
+
+    const elbowR = new THREE.Mesh(elbowGeo, mannequinMat);
+    elbowR.position.set(0, -0.52, 0);
+    armRGroup.add(elbowR);
+
+    const foreArmR = new THREE.Mesh(foreArmGeo, mannequinMat);
+    foreArmR.position.set(0, -0.77, 0);
+    foreArmR.castShadow = true;
+    armRGroup.add(foreArmR);
+
+    const handR = new THREE.Mesh(handGeo, mannequinMat);
+    handR.position.set(0, -1.04, 0);
+    handR.scale.set(0.8, 1.6, 0.35);
+    handR.castShadow = true;
+    armRGroup.add(handR);
+
     this.characterGroup.add(armRGroup);
 
-    // 5. Pierna Izquierda (Índice 4)
+    // -------------------------------------------------------------
+    // PARTE 5: Pierna Izquierda (Índice 4)
+    // -------------------------------------------------------------
     const legLGroup = new THREE.Group();
-    const legLGeo = new THREE.CylinderGeometry(0.09, 0.07, 1.0, 12);
-    const legLMesh = new THREE.Mesh(legLGeo, cyanNeonMat);
-    legLMesh.position.set(0, -0.45, 0);
-    legLGroup.add(legLMesh);
-    legLGroup.position.set(-0.18, -1.8, 0);
-    legLGroup.rotation.z = Math.PI / 16;
+    legLGroup.position.set(-0.13, -1.74, 0);
+    legLGroup.rotation.z = 0.015;
+
+    // Muslo
+    const thighGeo = new THREE.CylinderGeometry(0.075, 0.062, 0.65, 16);
+    const thighL = new THREE.Mesh(thighGeo, mannequinMat);
+    thighL.position.set(0, -0.32, 0);
+    thighL.castShadow = true;
+    legLGroup.add(thighL);
+
+    // Rodilla
+    const kneeGeo = new THREE.SphereGeometry(0.062, 12, 12);
+    const kneeL = new THREE.Mesh(kneeGeo, mannequinMat);
+    kneeL.position.set(0, -0.65, 0);
+    legLGroup.add(kneeL);
+
+    // Pantorrilla
+    const calfGeo = new THREE.CylinderGeometry(0.062, 0.052, 0.65, 16);
+    const calfL = new THREE.Mesh(calfGeo, mannequinMat);
+    calfL.position.set(0, -0.98, 0);
+    calfL.castShadow = true;
+    legLGroup.add(calfL);
+
+    // Tobillo
+    const ankleGeo = new THREE.SphereGeometry(0.052, 12, 12);
+    const ankleL = new THREE.Mesh(ankleGeo, mannequinMat);
+    ankleL.position.set(0, -1.30, 0);
+    legLGroup.add(ankleL);
+
+    // Pie horizontal alargado (apuntando hacia adelante)
+    const footGeo = new THREE.BoxGeometry(0.072, 0.045, 0.17);
+    const footL = new THREE.Mesh(footGeo, mannequinMat);
+    footL.position.set(0, -1.33, 0.045);
+    footL.castShadow = true;
+    legLGroup.add(footL);
+
     this.characterGroup.add(legLGroup);
 
-    // 6. Pierna Derecha (Índice 5)
+    // -------------------------------------------------------------
+    // PARTE 6: Pierna Derecha (Índice 5)
+    // -------------------------------------------------------------
     const legRGroup = new THREE.Group();
-    const legRGeo = new THREE.CylinderGeometry(0.09, 0.07, 1.0, 12);
-    const legRMesh = new THREE.Mesh(legRGeo, cyanNeonMat);
-    legRMesh.position.set(0, -0.45, 0);
-    legRGroup.add(legRMesh);
-    legRGroup.position.set(0.18, -1.8, 0);
-    legRGroup.rotation.z = -Math.PI / 16;
+    legRGroup.position.set(0.13, -1.74, 0);
+    legRGroup.rotation.z = -0.015;
+
+    const thighR = new THREE.Mesh(thighGeo, mannequinMat);
+    thighR.position.set(0, -0.32, 0);
+    thighR.castShadow = true;
+    legRGroup.add(thighR);
+
+    const kneeR = new THREE.Mesh(kneeGeo, mannequinMat);
+    kneeR.position.set(0, -0.65, 0);
+    legRGroup.add(kneeR);
+
+    const calfR = new THREE.Mesh(calfGeo, mannequinMat);
+    calfR.position.set(0, -0.98, 0);
+    calfR.castShadow = true;
+    legRGroup.add(calfR);
+
+    const ankleR = new THREE.Mesh(ankleGeo, mannequinMat);
+    ankleR.position.set(0, -1.30, 0);
+    legRGroup.add(ankleR);
+
+    const footR = new THREE.Mesh(footGeo, mannequinMat);
+    footR.position.set(0, -1.33, 0.045);
+    footR.castShadow = true;
+    legRGroup.add(footR);
+
     this.characterGroup.add(legRGroup);
 
-    // Ocultar todas las partes inicialmente
+    // Inicializar lista ordenada de las 6 partes
     this.parts = [headGroup, torsoGroup, armLGroup, armRGroup, legLGroup, legRGroup];
     this.parts.forEach(part => {
       part.visible = false;
@@ -272,10 +431,15 @@ export class ThreeHangmanStage {
    */
   setVictory(isWin) {
     this.isVictory = isWin;
-    if (isWin) {
-      this.targetCameraPos = { x: 0.6, y: 0, z: 4.5 };
+    this.updateCameraTarget();
+  }
+
+  updateCameraTarget() {
+    const isMobile = (this.container && (this.container.clientWidth < 450 || this.container.clientHeight < 160));
+    if (this.isVictory) {
+      this.targetCameraPos = isMobile ? { x: 0.6, y: 0, z: 5.0 } : { x: 0.6, y: 0, z: 4.2 };
     } else {
-      this.targetCameraPos = { x: 0, y: 1.5, z: 7.5 };
+      this.targetCameraPos = isMobile ? { x: 0, y: 0.2, z: 7.2 } : { x: 0, y: 0.15, z: 5.7 };
     }
   }
 
@@ -290,6 +454,7 @@ export class ThreeHangmanStage {
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
     this.camera.aspect = width / height;
+    this.updateCameraTarget();
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
   }
